@@ -1,7 +1,7 @@
 import React from 'react';
 import { Size, Sauce, SelectedTopping } from '../types';
 import { SIZES, SAUCES, TOPPINGS } from '../constants';
-import { Check, Circle, ArrowRight, ShoppingCart } from 'lucide-react';
+import { Check, Circle, ArrowRight, ShoppingCart, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEffects } from '../utils/sound';
 
@@ -95,7 +95,11 @@ export const Controls: React.FC<ControlsProps> = ({
                         </div>
                         <div className="text-left">
                             <div className="font-bold text-slate-800 text-sm">{size.name}</div>
-                            <div className="text-orange-600 font-bold text-sm">${size.price}</div>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-orange-600 font-bold text-sm">${size.price}</span>
+                                <span className="text-slate-300 text-xs">•</span>
+                                <span className="text-slate-400 text-xs font-medium">{size.calories} cal</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -148,7 +152,10 @@ export const Controls: React.FC<ControlsProps> = ({
                     </motion.div>
                     <div className="text-center z-10">
                         <div className="font-bold text-slate-800 text-sm">{sauce.name}</div>
-                        <div className="text-xs text-slate-400 font-medium mt-1">{sauce.price === 0 ? 'Free' : `+$${sauce.price}`}</div>
+                        <div className="flex items-center justify-center gap-1.5 mt-1">
+                            <span className="text-xs text-slate-400 font-medium">{sauce.price === 0 ? 'Free' : `+$${sauce.price}`}</span>
+                            <span className="text-[10px] text-slate-300 bg-slate-50 px-1.5 py-0.5 rounded-full">{sauce.calories} cal</span>
+                        </div>
                     </div>
                     {currentSauce.id === sauce.id && (
                         <div className="absolute top-3 right-3 text-orange-500">
@@ -186,6 +193,10 @@ export const Controls: React.FC<ControlsProps> = ({
 
                   const basePrice = topping.price * currentSize.toppingPriceMultiplier;
                   const displayPrice = isSelected && coverage !== 'whole' ? basePrice * 0.5 : basePrice;
+
+                  // Simple Calorie estimate per topping portion
+                  const baseCal = topping.calories; 
+                  const displayCal = isSelected && coverage !== 'whole' ? Math.round(baseCal * 0.5) : baseCal;
 
                   return (
                     <motion.button
@@ -227,8 +238,11 @@ export const Controls: React.FC<ControlsProps> = ({
                       
                       <div className="flex-1 min-w-0">
                           <div className={`font-bold text-xs leading-tight truncate ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{topping.name}</div>
-                          <div className={`text-[10px] font-medium mt-0.5 ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`}>
-                            {isSelected && coverage !== 'whole' ? 'Half ' : ''}+${displayPrice.toFixed(2)}
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className={`text-[10px] font-medium ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                {isSelected && coverage !== 'whole' ? 'Half ' : ''}+${displayPrice.toFixed(2)}
+                              </span>
+                              <span className="text-[10px] text-slate-300 font-medium">{displayCal} cal</span>
                           </div>
                       </div>
                     </motion.button>

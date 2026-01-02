@@ -3,6 +3,7 @@ export interface PriceItem {
   id: string;
   name: string;
   price: number;
+  calories: number;
 }
 
 export interface Size extends PriceItem {

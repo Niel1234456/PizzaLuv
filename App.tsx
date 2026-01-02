@@ -6,7 +6,7 @@ import { OrderModal } from './components/OrderModal';
 import { RecommendedSidebar } from './components/RecommendedSidebar';
 import { PizzaState, Size, Sauce, SelectedTopping, RecommendedPizza, Crust, Cut } from './types';
 import { SIZES, SAUCES, TOPPINGS, CRUSTS, CUTS } from './constants';
-import { ShoppingCart, RotateCcw, ChevronRight, ArrowRight } from 'lucide-react';
+import { ShoppingCart, RotateCcw, ChevronRight, ArrowRight, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { soundEffects } from './utils/sound';
 
@@ -42,6 +42,25 @@ const App: React.FC = () => {
       }
     });
     return total;
+  }, [pizzaState]);
+
+  // Calculate Total Calories
+  const totalCalories = useMemo(() => {
+    let calories = pizzaState.size.calories + pizzaState.sauce.calories + pizzaState.crust.calories;
+    const toppingMultiplier = pizzaState.size.toppingPriceMultiplier; // Use same multiplier for calories as a proxy for quantity
+
+    pizzaState.toppings.forEach((selected) => {
+        const topping = TOPPINGS.find((t) => t.id === selected.id);
+        if (topping) {
+            let itemCal = topping.calories * toppingMultiplier;
+            // Half calories for half coverage
+            if (selected.coverage !== 'whole') {
+                itemCal = itemCal * 0.5;
+            }
+            calories += itemCal;
+        }
+    });
+    return Math.round(calories);
   }, [pizzaState]);
 
   // Handlers
@@ -212,6 +231,15 @@ const App: React.FC = () => {
                  >
                     ${totalPrice.toFixed(2)}
                  </motion.span>
+                 <motion.div 
+                    key={totalCalories}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-1 mt-1 text-slate-500"
+                 >
+                     <Flame size={12} className="text-orange-400 fill-orange-400" />
+                     <span className="text-xs font-semibold">{totalCalories} cal</span>
+                 </motion.div>
               </div>
               
               <button 
