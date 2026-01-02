@@ -230,40 +230,85 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
              </motion.g>
          );
       case 'cheese_extra':
-        // Scattered lines/dots with Shimmer Effect
+        // Realistic Melted Mozzarella
         return (
-          <g>
-            <rect x="-4" y="-2" width="8" height="2" rx="1" fill="#FEF08A" opacity="0.8" />
-            <rect x="-2" y="2" width="6" height="2" rx="1" fill="#FEF08A" opacity="0.8" />
+          <g transform={`rotate(${randomSeed * 360}) scale(${0.9 + randomSeed * 0.4})`}>
+            {/* Organic Melted Shape (Blob) */}
+            <path 
+                d="M-8 -2 Q-10 -7 -3 -9 Q 4 -10 9 -4 Q 12 3 6 8 Q -1 10 -6 6 Q -9 2 -8 -2 Z"
+                fill="#FFF7ED" 
+                stroke="#FFE4B5"
+                strokeWidth="0.5"
+                filter={`url(#${sId("melted-glow")})`}
+            />
             
-            {/* Shimmer Overlay: White rects that fade in and out randomly */}
-            {!isThumbnail && (
-                <>
-                    <motion.rect 
-                        x="-4" y="-2" width="8" height="2" rx="1" fill="white"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 0.6, 0] }}
-                        transition={{ 
-                            duration: 2, 
-                            repeat: Infinity, 
-                            repeatDelay: randomSeed * 2 + 1,
-                            delay: randomSeed
-                        }}
-                    />
-                    <motion.rect 
-                        x="-2" y="2" width="6" height="2" rx="1" fill="white"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 0.6, 0] }}
-                        transition={{ 
-                            duration: 2, 
-                            repeat: Infinity, 
-                            repeatDelay: randomSeed * 2 + 1,
-                            delay: randomSeed + 0.5
-                        }}
-                    />
-                </>
+            {/* Subtle Surface Texture/Browning */}
+            {randomSeed > 0.6 && (
+                <circle cx="2" cy="-2" r="1.5" fill="#FDE68A" opacity="0.5" filter="blur(0.5px)" />
             )}
+            
+            {/* Oily Sheen/Highlight (Melted look) */}
+            <path 
+                d="M-5 -4 Q -2 -7 2 -5" 
+                stroke="white" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                opacity="0.6" 
+                fill="none" 
+            />
+             <path 
+                d="M2 3 Q 5 1 6 -2" 
+                stroke="white" 
+                strokeWidth="1" 
+                strokeLinecap="round" 
+                opacity="0.4" 
+                fill="none" 
+            />
           </g>
+        );
+      case 'parmesan':
+         // Scatter of fine granules
+         return (
+             <g transform={`rotate(${randomSeed * 360})`}>
+                 {[...Array(8)].map((_, i) => {
+                     const r = randomSeed * (i + 1) * 321 % 12; // pseudo-random radius within cluster
+                     const angle = randomSeed * (i + 1) * 123;
+                     const x = Math.cos(angle) * r;
+                     const y = Math.sin(angle) * r;
+                     const size = 0.5 + (randomSeed * i) % 0.8;
+                     return (
+                         <circle 
+                            key={i} 
+                            cx={x} 
+                            cy={y} 
+                            r={size} 
+                            fill="#FFFFF0" 
+                            opacity="0.9" 
+                         />
+                     );
+                 })}
+                 {/* One slightly larger flake */}
+                 <path d="M-2 -2 L-1 -3 L1 -1 L-1 1 Z" fill="#FEF9C3" opacity="0.8" transform={`translate(${randomSeed*5}, ${randomSeed*-5})`} />
+             </g>
+         );
+      case 'blue_cheese':
+        // Crumbled texture
+        return (
+            <g transform={`rotate(${randomSeed * 360}) scale(${0.8 + randomSeed * 0.3})`}>
+                {/* Main irregular crumb */}
+                <path 
+                    d="M-4 -2 L -2 -5 L 3 -3 L 5 1 L 2 4 L -3 3 Z" 
+                    fill="#F1F5F9" 
+                    stroke="#E2E8F0" 
+                    strokeWidth="0.5" 
+                    strokeLinejoin="round" 
+                />
+                {/* Blue veins */}
+                <path d="M-2 -3 L 0 -1 M 2 0 L 1 2" stroke="#475569" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+                <path d="M-1 1 L 1 0" stroke="#334155" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
+                {/* Small satellite crumb */}
+                <circle cx="5" cy="-3" r="1.5" fill="#F1F5F9" />
+            </g>
         );
       default:
         return <circle cx="0" cy="0" r="5" fill={color} />;
@@ -319,8 +364,8 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
 
         return { ...t, ...st, validPositions };
       })
-      .filter((t): t is Topping & { coverage: ToppingCoverage, validPositions: typeof TOPPING_POSITIONS } => !!t)
-      .sort((a, b) => a.zIndex - b.zIndex);
+      .filter((t): t is Topping & { coverage: ToppingCoverage, validPositions: typeof TOPPING_POSITIONS } => !!t);
+      // Sorting removed to respect user selection order
   }, [state.toppings]);
 
   return (
@@ -426,6 +471,13 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                 <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="3" seed="12" result="noise" />
                 <feColorMatrix type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.1  0 0 0 0 0  0 0 0 0.15 0" in="noise" result="coloredNoise"/>
                 <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="composite"/>
+            </filter>
+            
+            {/* Melted Cheese Glow/Blur Filter */}
+            <filter id={sId("melted-glow")} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
             </filter>
           </defs>
 

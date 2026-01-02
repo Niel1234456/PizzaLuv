@@ -23,6 +23,14 @@ export const SAUCES: Sauce[] = [
     type: 'white',
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/2718/2718421.png'
   },
+  {
+    id: 'cheese_sauce',
+    name: 'Cheddar Sauce',
+    price: 2,
+    color: '#FDBA74', // Orange-ish cheddar color
+    type: 'white',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2732/2732093.png'
+  },
   { 
     id: 'pesto', 
     name: 'Basil Pesto', 
@@ -44,12 +52,30 @@ export const SAUCES: Sauce[] = [
 export const TOPPINGS: Topping[] = [
   { 
     id: 'cheese_extra', 
-    name: 'Extra Cheese', 
+    name: 'Mozzarella', 
     price: 1.5, 
-    color: '#FCD34D',
+    color: '#FFF7ED',
     zIndex: 10,
     iconPath: 'M4 4h16v16H4z',
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/7219/7219954.png'
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/4976/4976737.png'
+  },
+  {
+    id: 'parmesan',
+    name: 'Parmesan Sprinkle',
+    price: 0.5,
+    color: '#FFFFF0',
+    zIndex: 50, // On top of everything
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/1303/1303926.png'
+  },
+  {
+    id: 'blue_cheese',
+    name: 'Blue Cheese',
+    price: 2,
+    color: '#E0F2FE',
+    zIndex: 11,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/13830/13830672.png'
   },
   { 
     id: 'pepperoni', 
@@ -138,58 +164,65 @@ export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
   {
     id: 'margherita',
     name: 'Margherita',
-    description: 'Classic tomato & basil',
+    description: 'Classic tomato & basil with plenty of mozzarella',
     sauceId: 'tomato',
-    toppings: ['basil', 'cheese_extra']
+    toppings: ['cheese_extra', 'basil']
+  },
+  {
+    id: 'four_cheese',
+    name: 'Quattro Formaggi',
+    description: 'Cheddar sauce base, mozzarella, blue cheese, and parmesan',
+    sauceId: 'cheese_sauce',
+    toppings: ['cheese_extra', 'blue_cheese', 'parmesan']
   },
   {
     id: 'hawaiian',
     name: 'Tropical Hawaiian',
     description: 'Ham (using pepperoni visual), Pineapple & Cheese',
     sauceId: 'tomato',
-    toppings: ['pepperoni', 'pineapple', 'cheese_extra']
+    toppings: ['cheese_extra', 'pepperoni', 'pineapple']
   },
   {
     id: 'veggie',
     name: 'Veggie Delight',
     description: 'Onions, peppers, olives & mushrooms',
     sauceId: 'tomato',
-    toppings: ['onion', 'pepper', 'olive', 'mushroom']
+    toppings: ['onion', 'pepper', 'olive', 'mushroom', 'parmesan']
   },
   {
     id: 'pepperoni_feast',
     name: 'Pepperoni Feast',
     description: 'Classic pepperoni & extra cheese',
     sauceId: 'tomato',
-    toppings: ['pepperoni', 'cheese_extra']
+    toppings: ['cheese_extra', 'pepperoni']
   },
   {
     id: 'snow_white',
     name: 'Snow White',
     description: 'Garlic white sauce, mushroom & basil',
     sauceId: 'white',
-    toppings: ['mushroom', 'basil', 'cheese_extra']
+    toppings: ['cheese_extra', 'mushroom', 'basil']
   },
   {
     id: 'bbq_smokehouse',
     name: 'BBQ Smokehouse',
     description: 'Smoky BBQ sauce, onions, and crisp peppers',
     sauceId: 'bbq',
-    toppings: ['onion', 'pepper', 'cheese_extra']
+    toppings: ['cheese_extra', 'onion', 'pepper']
   },
   {
     id: 'pesto_verde',
     name: 'Pesto Verde',
     description: 'Basil pesto, fresh basil, spinach, and peppers',
     sauceId: 'pesto',
-    toppings: ['basil', 'pepper', 'spinach']
+    toppings: ['spinach', 'pepper', 'basil', 'parmesan']
   },
   {
     id: 'creamy_shroom',
     name: 'Creamy Mushroom',
     description: 'Garlic white sauce with mushrooms and onions',
     sauceId: 'white',
-    toppings: ['mushroom', 'onion', 'cheese_extra']
+    toppings: ['cheese_extra', 'onion', 'mushroom']
   },
   {
     id: 'picante',
