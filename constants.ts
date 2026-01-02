@@ -1,9 +1,27 @@
-import { Size, Sauce, Topping, RecommendedPizza } from './types';
+import { Size, Sauce, Topping, RecommendedPizza, Crust, Cut } from './types';
 
 export const SIZES: Size[] = [
   { id: 's', name: 'Small (10")', price: 10, scale: 0.85, toppingPriceMultiplier: 0.8 },
   { id: 'm', name: 'Medium (12")', price: 14, scale: 1, toppingPriceMultiplier: 1 },
   { id: 'l', name: 'Large (14")', price: 18, scale: 1.15, toppingPriceMultiplier: 1.2 },
+];
+
+export const CRUSTS: Crust[] = [
+  { id: 'hand_tossed', name: 'Classic Hand-Tossed', price: 0, description: 'Traditional garlic-buttered crust' },
+  { id: 'thin', name: 'Thin Crust', price: 0, description: 'Crispy and light' },
+  { id: 'stuffed', name: 'Cheese-Stuffed Crust', price: 2.5, description: 'Ring of melted mozzarella inside' },
+  { id: 'pan', name: 'Pan-Style Thick', price: 1, description: 'Deep dish, golden and buttery' },
+  { id: 'neapolitan', name: 'Neapolitan Artisan', price: 2, description: 'Thin center, puffy charred rim' },
+  { id: 'ny_foldable', name: 'NY Foldable', price: 0, description: 'Large, wide, and foldable' },
+  { id: 'whole_wheat', name: 'Whole Wheat', price: 1, description: 'Nutty flavor, heartier texture' },
+  { id: 'gluten_free', name: 'Gluten-Free', price: 3, description: 'Rice and potato flour blend' },
+];
+
+export const CUTS: Cut[] = [
+  { id: 'classic', name: 'Classic Slice', description: '8 triangular slices' },
+  { id: 'square', name: 'Square Cut', description: 'Tavern-style grid cut' },
+  { id: 'party', name: 'Party Cut', description: 'Smaller bite-sized squares' },
+  { id: 'uncut', name: 'Uncut', description: 'Keep it whole' },
 ];
 
 export const SAUCES: Sauce[] = [

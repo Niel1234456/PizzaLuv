@@ -345,6 +345,30 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
 export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail = false, idPrefix = '' }) => {
   // Scoped ID helper
   const sId = (id: string) => `${idPrefix}${id}`;
+  const crustId = state.crust?.id || 'hand_tossed';
+  const cutId = state.cut?.id || 'classic';
+
+  // Determine Crust Visual Properties
+  const crustVisuals = useMemo(() => {
+    switch(crustId) {
+        case 'thin': 
+            return { innerRadius: 94, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] };
+        case 'stuffed':
+            return { innerRadius: 78, gradientColors: ['#F5DEB3', '#DEB887', '#CD853F'] }; // Thick rim
+        case 'pan':
+            return { innerRadius: 88, gradientColors: ['#E6BE8A', '#CD853F', '#A0522D'] }; // Darker, fried look
+        case 'neapolitan':
+            return { innerRadius: 82, gradientColors: ['#F5DEB3', '#DEB887', '#8B4513'] }; // High contrast
+        case 'whole_wheat':
+            return { innerRadius: 86, gradientColors: ['#D2B48C', '#A0522D', '#8B4513'] }; // Brown
+        case 'gluten_free':
+            return { innerRadius: 88, gradientColors: ['#FFF8DC', '#F0E68C', '#BDB76B'] }; // Pale
+        case 'ny_foldable':
+            return { innerRadius: 90, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] }; // Wide
+        default: // Hand Tossed
+            return { innerRadius: 86, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] };
+    }
+  }, [crustId]);
 
   // Sort and Prepare Toppings
   const visuals = useMemo(() => {
@@ -362,11 +386,24 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
           return true;
         });
 
-        return { ...t, ...st, validPositions };
+        // Filter positions based on crust inner radius (keep toppings off the rim)
+        // We assume max possible radius in constant is ~83ish.
+        // We scale valid positions if the crust is very thick (like stuffed)
+        const scaleFactor = crustVisuals.innerRadius < 80 ? 0.9 : 1;
+
+        return { 
+            ...t, 
+            ...st, 
+            validPositions: validPositions.map(p => ({
+                ...p, 
+                x: p.x * scaleFactor, 
+                y: p.y * scaleFactor 
+            })) 
+        };
       })
       .filter((t): t is Topping & { coverage: ToppingCoverage, validPositions: typeof TOPPING_POSITIONS } => !!t);
       // Sorting removed to respect user selection order
-  }, [state.toppings]);
+  }, [state.toppings, crustVisuals.innerRadius]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
@@ -419,11 +456,11 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
       >
         <svg viewBox="-110 -110 220 220" className={`w-full h-full ${!isThumbnail && 'drop-shadow-xl'}`}>
           <defs>
-            {/* Base Dough Gradient - Richer, more baked look */}
+            {/* Dynamic Dough Gradient based on Crust Type */}
             <radialGradient id={sId("doughGradient")} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                <stop offset="70%" stopColor="#F5DEB3" /> 
-                <stop offset="92%" stopColor="#DEB887" /> 
-                <stop offset="100%" stopColor="#C08552" /> 
+                <stop offset="70%" stopColor={crustVisuals.gradientColors[0]} /> 
+                <stop offset="92%" stopColor={crustVisuals.gradientColors[1]} /> 
+                <stop offset="100%" stopColor={crustVisuals.gradientColors[2]} /> 
             </radialGradient>
             
             {/* Crust 3D Highlight Gradient - Creates the puffy rim effect */}
@@ -502,10 +539,16 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
              <ellipse cx="-80" cy="30" rx="4" ry="3" transform="rotate(-45 -80 30)" />
           </g>
 
-          {/* 3. Inner "Bed" for Ingredients - Slightly darker/indented area */}
-          <circle cx="0" cy="0" r="86" fill="#EBC79E" opacity="0.8" />
+          {/* 3. Inner "Bed" for Ingredients - Radius changes based on crust type */}
+          <motion.circle 
+              cx="0" cy="0" 
+              animate={{ r: crustVisuals.innerRadius }}
+              transition={{ duration: 0.4 }}
+              fill="#EBC79E" 
+              opacity="0.8" 
+          />
 
-          {/* Sauce Layer */}
+          {/* Sauce Layer - Radius matches inner bed minus margin */}
           <g filter={`url(#${sId("sauce-edge")})`}>
             <AnimatePresence mode="wait">
                 <motion.g key={state.sauce.id}>
@@ -513,12 +556,12 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                     <motion.circle 
                         cx="0" 
                         cy="0" 
-                        r="83" 
+                        // Animate radius based on crust type
+                        animate={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: [0, 20, crustVisuals.innerRadius - 3] }}
                         fill={state.sauce.color}
-                        initial={isThumbnail ? { r: 83 } : { r: 0 }}
-                        animate={isThumbnail ? { r: 83 } : { r: [0, 20, 83] }}
+                        initial={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: 0 }}
                         exit={isThumbnail ? undefined : { opacity: 0, duration: 0.2 }}
-                        transition={isThumbnail ? undefined : { 
+                        transition={isThumbnail ? { duration: 0.4 } : { 
                           duration: 1.5, 
                           times: [0, 0.2, 1], 
                           ease: "linear"
@@ -529,12 +572,11 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                     <motion.circle
                         cx="0"
                         cy="0"
-                        r="83"
+                        animate={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: [0, 20, crustVisuals.innerRadius - 3] }}
                         fill={state.sauce.color}
                         filter={`url(#${sId("sauce-texture")})`}
-                        initial={isThumbnail ? { r: 83 } : { r: 0 }}
-                        animate={isThumbnail ? { r: 83 } : { r: [0, 20, 83] }}
-                        transition={isThumbnail ? undefined : { 
+                        initial={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: 0 }}
+                        transition={isThumbnail ? { duration: 0.4 } : { 
                           duration: 1.5, 
                           times: [0, 0.2, 1],
                           ease: "linear"
@@ -652,6 +694,39 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                );
             })}
           </AnimatePresence>
+
+          {/* Cut Overlay Layer */}
+          {!isThumbnail && (
+             <g stroke="rgba(0,0,0,0.4)" strokeWidth="1" strokeLinecap="round">
+                 {cutId === 'classic' && (
+                     <>
+                         <line x1="0" y1="-100" x2="0" y2="100" />
+                         <line x1="-100" y1="0" x2="100" y2="0" />
+                         <line x1="-70" y1="-70" x2="70" y2="70" />
+                         <line x1="70" y1="-70" x2="-70" y2="70" />
+                     </>
+                 )}
+                 {cutId === 'square' && (
+                     <>
+                        <line x1="-33" y1="-95" x2="-33" y2="95" />
+                        <line x1="33" y1="-95" x2="33" y2="95" />
+                        <line x1="-95" y1="-33" x2="95" y2="-33" />
+                        <line x1="-95" y1="33" x2="95" y2="33" />
+                     </>
+                 )}
+                 {cutId === 'party' && (
+                     <>
+                        <line x1="-50" y1="-86" x2="-50" y2="86" />
+                        <line x1="0" y1="-100" x2="0" y2="100" />
+                        <line x1="50" y1="-86" x2="50" y2="86" />
+                        
+                        <line x1="-86" y1="-50" x2="86" y2="-50" />
+                        <line x1="-100" y1="0" x2="100" y2="0" />
+                        <line x1="-86" y1="50" x2="86" y2="50" />
+                     </>
+                 )}
+             </g>
+          )}
         </svg>
       </motion.div>
     </div>

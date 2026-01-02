@@ -1,3 +1,4 @@
+
 export interface PriceItem {
   id: string;
   name: string;
@@ -22,6 +23,16 @@ export interface Topping extends PriceItem {
   zIndex: number;
 }
 
+export interface Crust extends PriceItem {
+  description: string;
+}
+
+export interface Cut {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export type ToppingCoverage = 'whole' | 'left' | 'right';
 
 export interface SelectedTopping {
@@ -31,8 +42,10 @@ export interface SelectedTopping {
 
 export interface PizzaState {
   size: Size;
+  crust: Crust;
+  cut: Cut;
   sauce: Sauce;
-  toppings: SelectedTopping[]; // Changed from string[] to support coverage
+  toppings: SelectedTopping[];
 }
 
 export interface OrderSummary {
