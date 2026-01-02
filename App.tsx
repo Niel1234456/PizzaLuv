@@ -2,10 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { PizzaVisuals } from './components/PizzaVisuals';
 import { Controls } from './components/Controls';
 import { OrderModal } from './components/OrderModal';
-import { PizzaState, Size, Sauce } from './types';
+import { RecommendedSidebar } from './components/RecommendedSidebar';
+import { PizzaState, Size, Sauce, SelectedTopping, RecommendedPizza } from './types';
 import { SIZES, SAUCES, TOPPINGS } from './constants';
 import { ShoppingCart, RotateCcw, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { soundEffects } from './utils/sound';
 
 const INITIAL_STATE: PizzaState = {
   size: SIZES[1], // Medium
@@ -20,13 +22,20 @@ const App: React.FC = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('size');
 
-  // Calculate Total Price
+  // Calculate Total Price with Size Adjustments
   const totalPrice = useMemo(() => {
     let total = pizzaState.size.price + pizzaState.sauce.price;
-    pizzaState.toppings.forEach((toppingId) => {
-      const topping = TOPPINGS.find((t) => t.id === toppingId);
+    const toppingMultiplier = pizzaState.size.toppingPriceMultiplier;
+
+    pizzaState.toppings.forEach((selected) => {
+      const topping = TOPPINGS.find((t) => t.id === selected.id);
       if (topping) {
-        total += topping.price;
+        let price = topping.price * toppingMultiplier;
+        // Half price for half coverage
+        if (selected.coverage !== 'whole') {
+            price = price * 0.5;
+        }
+        total += price;
       }
     });
     return total;
@@ -35,7 +44,6 @@ const App: React.FC = () => {
   // Handlers
   const handleSetSize = (size: Size) => {
     setPizzaState((prev) => ({ ...prev, size }));
-    // Auto advance hint could be placed here, but manual is often better for exploration
   };
 
   const handleSetSauce = (sauce: Sauce) => {
@@ -44,29 +52,63 @@ const App: React.FC = () => {
 
   const handleToggleTopping = (toppingId: string) => {
     setPizzaState((prev) => {
-      const isSelected = prev.toppings.includes(toppingId);
-      if (isSelected) {
-        return { ...prev, toppings: prev.toppings.filter((id) => id !== toppingId) };
+      const existing = prev.toppings.find((t) => t.id === toppingId);
+      let newToppings: SelectedTopping[] = [];
+
+      // Cycle: None -> Whole -> Left -> Right -> None
+      if (!existing) {
+        soundEffects.toggleOn(); // Add Sound
+        newToppings = [...prev.toppings, { id: toppingId, coverage: 'whole' }];
+      } else if (existing.coverage === 'whole') {
+        soundEffects.toggleMode(); // Change Mode Sound
+        newToppings = prev.toppings.map(t => t.id === toppingId ? { ...t, coverage: 'left' } : t);
+      } else if (existing.coverage === 'left') {
+        soundEffects.toggleMode(); // Change Mode Sound
+        newToppings = prev.toppings.map(t => t.id === toppingId ? { ...t, coverage: 'right' } : t);
       } else {
-        return { ...prev, toppings: [...prev.toppings, toppingId] };
+        soundEffects.toggleOff(); // Remove Sound
+        newToppings = prev.toppings.filter((t) => t.id !== toppingId);
       }
+
+      return { ...prev, toppings: newToppings };
     });
+  };
+
+  const handleApplyPreset = (preset: RecommendedPizza) => {
+    // Find the objects
+    const sauce = SAUCES.find(s => s.id === preset.sauceId) || SAUCES[0];
+    const toppings: SelectedTopping[] = preset.toppings.map(tId => ({
+        id: tId,
+        coverage: 'whole'
+    }));
+
+    setPizzaState(prev => ({
+        ...prev,
+        sauce,
+        toppings
+    }));
+    
+    // Switch to toppings tab so they can see/edit what was added
+    setActiveTab('toppings');
   };
 
   const handleReset = () => {
     if (window.confirm('Are you sure you want to reset your pizza?')) {
+      soundEffects.select();
       setPizzaState(INITIAL_STATE);
       setActiveTab('size');
     }
   };
 
   const handleNextStep = () => {
+      soundEffects.select();
       if (activeTab === 'size') setActiveTab('sauce');
       else if (activeTab === 'sauce') setActiveTab('toppings');
       else handleConfirmOrder();
   };
 
   const handleConfirmOrder = () => {
+    soundEffects.confirm();
     setIsOrderModalOpen(true);
   };
 
@@ -77,14 +119,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col md:flex-row relative">
+    <div className="h-full w-full flex flex-col md:flex-row relative bg-[#FFF7ED]">
       
-      {/* Header / Brand - Floating Top Left */}
-      <div className="absolute top-4 left-4 z-30 flex items-center gap-2">
+      {/* Mobile Header (Hidden on Desktop as it's in the sidebar) */}
+      <div className="md:hidden absolute top-4 left-4 z-30 flex items-center gap-2">
          <div className="bg-orange-600 text-white p-2.5 rounded-xl shadow-lg shadow-orange-500/20">
              <span className="font-bold text-xl">🍕</span>
          </div>
-         <h1 className="text-2xl font-black tracking-tight text-gray-800 hidden sm:block">PizzaCraft</h1>
+         <h1 className="text-2xl font-black tracking-tight text-gray-800">PizzaCraft</h1>
       </div>
 
       {/* Reset Button - Floating Top Right */}
@@ -96,12 +138,18 @@ const App: React.FC = () => {
         <RotateCcw size={20} />
       </button>
 
-      {/* Main Content Area */}
+      {/* Left Sidebar - Recommended Pizzas */}
+      <RecommendedSidebar onSelectPizza={handleApplyPreset} />
+
+      {/* Main Content Area - Centered Visual */}
       <div className="flex-1 h-[55%] md:h-full relative flex items-center justify-center pt-8 md:pt-0 bg-transparent">
-         <PizzaVisuals state={pizzaState} />
+         {/* Shift center slightly right on desktop to balance the two sidebars */}
+         <div className="md:pl-[320px] md:pr-[450px] w-full h-full flex items-center justify-center">
+            <PizzaVisuals state={pizzaState} />
+         </div>
       </div>
 
-      {/* Floating Control Panel */}
+      {/* Floating Control Panel - Right Side */}
       <motion.div 
         className="h-[45%] md:h-[90vh] md:w-[450px] md:absolute md:right-4 md:top-[5vh] w-full bg-white/80 backdrop-blur-xl md:rounded-3xl rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] md:shadow-2xl flex flex-col border border-white/50 z-20"
         initial={{ y: 100, opacity: 0 }}
@@ -129,7 +177,14 @@ const App: React.FC = () => {
            <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col">
                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Total</span>
-                 <span className="text-3xl font-black text-gray-800">${totalPrice.toFixed(2)}</span>
+                 <motion.span 
+                    key={totalPrice}
+                    initial={{ scale: 1.2, color: "#f97316" }}
+                    animate={{ scale: 1, color: "#1f2937" }}
+                    className="text-3xl font-black text-gray-800"
+                 >
+                    ${totalPrice.toFixed(2)}
+                 </motion.span>
               </div>
               
               <button 

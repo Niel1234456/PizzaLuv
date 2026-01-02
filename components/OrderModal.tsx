@@ -73,13 +73,23 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, state, 
                 {state.toppings.length > 0 && (
                     <div className="border-t border-dashed my-2 pt-2">
                         <span className="text-gray-500 text-xs uppercase tracking-wider font-bold mb-1 block">Toppings</span>
-                        {state.toppings.map(id => {
-                            const topping = TOPPINGS.find(t => t.id === id);
+                        {state.toppings.map(selected => {
+                            const topping = TOPPINGS.find(t => t.id === selected.id);
                             if (!topping) return null;
+                            
+                            const multiplier = state.size.toppingPriceMultiplier;
+                            let price = topping.price * multiplier;
+                            if (selected.coverage !== 'whole') price *= 0.5;
+
                             return (
-                                <div key={id} className="flex justify-between items-center py-0.5">
-                                    <span className="text-gray-600 pl-2 border-l-2 border-gray-200">{topping.name}</span>
-                                    <span className="font-semibold text-gray-900">${topping.price.toFixed(2)}</span>
+                                <div key={selected.id} className="flex justify-between items-center py-0.5">
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-600 pl-2 border-l-2 border-gray-200">{topping.name}</span>
+                                        {selected.coverage !== 'whole' && (
+                                            <span className="text-[10px] text-gray-400 pl-2 uppercase font-bold">{selected.coverage} Half</span>
+                                        )}
+                                    </div>
+                                    <span className="font-semibold text-gray-900">${price.toFixed(2)}</span>
                                 </div>
                             );
                         })}

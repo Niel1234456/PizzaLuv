@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PizzaState, Topping } from '../types';
+import { PizzaState, Topping, ToppingCoverage } from '../types';
 import { TOPPINGS, TOPPING_POSITIONS } from '../constants';
 
 interface PizzaVisualsProps {
   state: PizzaState;
+  isThumbnail?: boolean;
+  idPrefix?: string;
 }
 
 // Generate spiral points for the spoon animation frames
@@ -33,21 +35,46 @@ const SPIRAL_PATH_D = (() => {
     return `M 0 0 L ${points.join(' L ')}`;
 })();
 
-const ToppingShape: React.FC<{ type: string; color: string; position: any; index: number }> = ({ type, color, position, index }) => {
+const ToppingShape: React.FC<{ type: string; color: string; position: any; index: number; isThumbnail: boolean; idPrefix: string }> = ({ type, color, position, index, isThumbnail, idPrefix }) => {
   
   // Stable random values for animations to prevent re-render jitter
   const randomSeed = useMemo(() => Math.random(), []);
+  const sId = (id: string) => `${idPrefix}${id}`;
   
   // Render different SVG paths based on topping type
   const renderShape = () => {
     switch(type) {
       case 'pepperoni':
         return (
-          <circle cx="0" cy="0" r="8" fill="#B91C1C" stroke="#7F1D1D" strokeWidth="1" opacity="0.95" />
+          <g transform={`rotate(${randomSeed * 360})`}>
+            {/* Main Slice Body with Gradient */}
+            <circle cx="0" cy="0" r="9" fill={`url(#${sId("pepGradient")})`} stroke="#7F1D1D" strokeWidth="0.5" />
+            
+            {/* Fat Marbling (Simulated with semi-transparent shapes) */}
+            <circle cx="-3" cy="-2" r="2" fill="#FFCCBC" opacity="0.3" />
+            <circle cx="2" cy="3" r="1.5" fill="#FFCCBC" opacity="0.25" />
+            <circle cx="4" cy="-2" r="1.8" fill="#FFCCBC" opacity="0.3" />
+            
+            {/* Small Spice/Texture Dots */}
+            <circle cx="0" cy="4" r="0.6" fill="#3E0000" opacity="0.3" />
+            <circle cx="-4" cy="1" r="0.5" fill="#3E0000" opacity="0.3" />
+            <circle cx="3" cy="-4" r="0.5" fill="#3E0000" opacity="0.3" />
+
+            {/* Oily Sheen / Specular Highlight */}
+            <path d="M-4 -4 Q-2 -6 2 -5" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.15" fill="none" />
+          </g>
         );
       case 'mushroom':
         return (
-          <path d="M0 -6 C-5 -6 -8 -3 -8 1 C-8 4 -5 5 -2 5 L-2 8 L2 8 L2 5 C5 5 8 4 8 1 C8 -3 5 -6 0 -6 Z" fill="#D6D3D1" stroke="#78716C" strokeWidth="1" />
+          // Using the image icon as requested
+          <image
+            href="https://cdn-icons-png.flaticon.com/512/8775/8775340.png"
+            x="-11"
+            y="-11"
+            width="22"
+            height="22"
+            opacity="0.95"
+          />
         );
       case 'olive':
         return (
@@ -58,36 +85,149 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
         );
       case 'onion':
         return (
-          <g>
-             <path d="M-8 0 A 8 8 0 0 1 8 0" fill="none" stroke="#C084FC" strokeWidth="2" strokeLinecap="round" />
-             <path d="M-5 0 A 5 5 0 0 1 5 0" fill="none" stroke="#E9D5FF" strokeWidth="1.5" strokeLinecap="round" />
+          <g transform={`rotate(${randomSeed * 360})`}>
+             {/* Drop Shadow for depth */}
+             <path d="M-10 0 A 10 10 0 0 1 10 0" fill="none" stroke="rgba(0,0,0,0.15)" strokeWidth="3" strokeLinecap="round" transform="translate(0.5, 0.5)" />
+             
+             {/* Outer Skin - Distinct Dark Purple */}
+             <path d="M-10 0 A 10 10 0 0 1 10 0" fill="none" stroke="#7E22CE" strokeWidth="3.5" strokeLinecap="round" />
+             
+             {/* Flesh - Pale Purple/White - sitting inside the skin */}
+             <path d="M-10 0 A 10 10 0 0 1 10 0" fill="none" stroke="#F3E8FF" strokeWidth="2.5" strokeLinecap="round" />
+             
+             {/* Inner Layer Separator - Thin line defining the layers */}
+             <path d="M-10 0 A 10 10 0 0 1 10 0" fill="none" stroke="#A855F7" strokeWidth="0.5" strokeLinecap="round" transform="scale(0.95)" />
+             
+             {/* Occasional Inner Ring Segment (randomly visible) */}
+             {randomSeed > 0.4 && (
+                <g transform="translate(0, 4) scale(0.6)">
+                    <path d="M-8 0 A 8 8 0 0 1 8 0" fill="none" stroke="#7E22CE" strokeWidth="4" strokeLinecap="round" opacity="0.9" />
+                    <path d="M-8 0 A 8 8 0 0 1 8 0" fill="none" stroke="#F3E8FF" strokeWidth="2.5" strokeLinecap="round" />
+                </g>
+             )}
           </g>
         );
       case 'pepper':
         return (
-          <path d="M-8 0 Q-4 -8 0 0 Q4 8 8 0" fill="none" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" />
+           <g transform={`rotate(${randomSeed * 360})`}>
+                {/* Lobed Green Pepper Ring */}
+                <path 
+                    d="M-5 -7 Q0 -5 5 -7 Q7 -3 7 3 Q4 5 4 7 Q0 5 -4 7 Q-7 3 -7 -3 Q-4 -5 -5 -7" 
+                    fill="none" 
+                    stroke="#15803D" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                />
+                {/* Inner Highlight for depth */}
+                <path 
+                    d="M-5 -7 Q0 -5 5 -7 Q7 -3 7 3 Q4 5 4 7 Q0 5 -4 7 Q-7 3 -7 -3 Q-4 -5 -5 -7" 
+                    fill="none" 
+                    stroke="#86EFAC" 
+                    strokeWidth="0.8" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    transform="scale(0.8)"
+                    opacity="0.6"
+                />
+                {/* Gloss */}
+                <path d="M-5 -7 Q-2 -6 -1 -6" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+            </g>
+        );
+      case 'pepper_red':
+        return (
+          <g transform={`rotate(${randomSeed * 360})`}>
+            {/* Lobed Red Pepper Ring */}
+            <path 
+                d="M-5 -7 Q0 -5 5 -7 Q7 -3 7 3 Q4 5 4 7 Q0 5 -4 7 Q-7 3 -7 -3 Q-4 -5 -5 -7" 
+                fill="none" 
+                stroke="#B91C1C" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+            />
+            {/* Inner Highlight */}
+            <path 
+                d="M-5 -7 Q0 -5 5 -7 Q7 -3 7 3 Q4 5 4 7 Q0 5 -4 7 Q-7 3 -7 -3 Q-4 -5 -5 -7" 
+                fill="none" 
+                stroke="#FCA5A5" 
+                strokeWidth="0.8" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                transform="scale(0.8)"
+                opacity="0.6"
+            />
+            {/* Gloss */}
+            <path d="M-5 -7 Q-2 -6 -1 -6" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+          </g>
+        );
+      case 'pineapple':
+        return (
+          <g transform={`rotate(${randomSeed * 360})`}>
+             {/* Irregular Chunk Body */}
+             <path d="M-5 -3 L-2 -5 L5 -2 L4 4 L-1 5 L-5 2 Z" fill="#FDE047" stroke="#EAB308" strokeWidth="0.5" strokeLinejoin="round" />
+             
+             {/* Caramelized/Browned Edge (Partial) - simulates oven bake */}
+             <path d="M4 4 L-1 5 L-5 2" fill="none" stroke="#D97706" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+             
+             {/* Fibrous Texture Details */}
+             <path d="M-2 -1 L0 -3 M2 0 L3 -2" stroke="#A16207" strokeWidth="0.5" opacity="0.4" />
+             
+             {/* Juicy Highlight */}
+             <ellipse cx="-1" cy="-1" rx="2" ry="1" fill="white" opacity="0.4" transform="rotate(-30)" />
+          </g>
+        );
+      case 'spinach':
+        return (
+            <motion.g 
+                 initial={isThumbnail ? undefined : { scale: 0.5, rotate: -20 * (randomSeed > 0.5 ? 1 : -1) }}
+                 animate={isThumbnail ? undefined : { 
+                     scale: 0.8 + randomSeed * 0.4, 
+                     rotate: randomSeed * 360 
+                 }}
+                 transition={{ 
+                     type: "spring",
+                     stiffness: 200,
+                 }}
+            >
+                {/* Dark, wilted leaf shape */}
+                <path 
+                    d="M0 10 C-4 8 -8 2 -6 -4 C-4 -8 0 -10 4 -6 C8 -4 8 4 5 8 C3 10 1 10 0 10 Z"
+                    fill="#14532D" 
+                    stroke="#052e16"
+                    strokeWidth="0.5"
+                />
+                {/* Veins */}
+                <path d="M0 10 Q 1 0 -2 -6" stroke="#22c55e" strokeWidth="0.5" fill="none" opacity="0.3" />
+                <path d="M0 2 L 3 4 M 0 0 L -3 2" stroke="#22c55e" strokeWidth="0.5" fill="none" opacity="0.2" />
+            </motion.g>
         );
       case 'basil':
-         // "Freshness" animation: Flash bright green and settle with a slight curl (scaleY)
          return (
-             <motion.path 
-                 d="M0 8 Q4 0 8 -4 Q0 -2 -8 -4 Q-4 0 0 8" 
-                 fill="#4ADE80" 
-                 stroke="#15803D" 
-                 strokeWidth="0.5"
-                 initial={{ scale: 0.5, rotate: -20 * (randomSeed > 0.5 ? 1 : -1) }}
-                 animate={{ 
+             <motion.g 
+                 initial={isThumbnail ? undefined : { scale: 0.5, rotate: -20 * (randomSeed > 0.5 ? 1 : -1) }}
+                 animate={isThumbnail ? undefined : { 
                      scale: 1, 
-                     rotate: 0,
-                     fill: ["#86EFAC", "#4ADE80"], // Flash light green
+                     rotate: randomSeed * 360,
                  }}
                  transition={{ 
                      type: "spring",
                      stiffness: 200,
                      damping: 12,
-                     fill: { duration: 0.8, ease: "easeOut" }
                  }}
-             />
+             >
+                 {/* Fresh, brighter green, smoother leaf */}
+                 <path 
+                     d="M0 12 Q4 8 6 0 Q6 -8 0 -12 Q-6 -8 -6 0 Q-4 8 0 12" 
+                     fill="#4ADE80" 
+                     stroke="#15803D" 
+                     strokeWidth="0.5"
+                 />
+                 {/* Central Vein / Fold */}
+                 <path d="M0 -11 Q 2 0 0 11" stroke="#166534" strokeWidth="0.5" fill="none" opacity="0.4" />
+                 {/* Shine */}
+                 <path d="M-2 -5 Q-1 -2 -2 2" stroke="white" strokeWidth="1" opacity="0.2" fill="none" />
+             </motion.g>
          );
       case 'cheese_extra':
         // Scattered lines/dots with Shimmer Effect
@@ -97,28 +237,32 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
             <rect x="-2" y="2" width="6" height="2" rx="1" fill="#FEF08A" opacity="0.8" />
             
             {/* Shimmer Overlay: White rects that fade in and out randomly */}
-            <motion.rect 
-                x="-4" y="-2" width="8" height="2" rx="1" fill="white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.6, 0] }}
-                transition={{ 
-                    duration: 2, 
-                    repeat: Infinity, 
-                    repeatDelay: randomSeed * 2 + 1,
-                    delay: randomSeed
-                }}
-            />
-             <motion.rect 
-                x="-2" y="2" width="6" height="2" rx="1" fill="white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.6, 0] }}
-                transition={{ 
-                    duration: 2, 
-                    repeat: Infinity, 
-                    repeatDelay: randomSeed * 2 + 1,
-                    delay: randomSeed + 0.5
-                }}
-            />
+            {!isThumbnail && (
+                <>
+                    <motion.rect 
+                        x="-4" y="-2" width="8" height="2" rx="1" fill="white"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.6, 0] }}
+                        transition={{ 
+                            duration: 2, 
+                            repeat: Infinity, 
+                            repeatDelay: randomSeed * 2 + 1,
+                            delay: randomSeed
+                        }}
+                    />
+                    <motion.rect 
+                        x="-2" y="2" width="6" height="2" rx="1" fill="white"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.6, 0] }}
+                        transition={{ 
+                            duration: 2, 
+                            repeat: Infinity, 
+                            repeatDelay: randomSeed * 2 + 1,
+                            delay: randomSeed + 0.5
+                        }}
+                    />
+                </>
+            )}
           </g>
         );
       default:
@@ -128,14 +272,14 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
 
   return (
     <motion.g
-      initial={{ opacity: 0, scale: 0, y: -40 }}
+      initial={isThumbnail ? undefined : { opacity: 0, scale: 0, y: -40 }}
       animate={{ 
         opacity: 1, 
         scale: position.scale, 
         y: 0,
         rotate: position.rotation
       }}
-      exit={{ opacity: 0, scale: 0 }}
+      exit={isThumbnail ? undefined : { opacity: 0, scale: 0 }}
       transition={{ 
         duration: 0.4, 
         delay: index * 0.02, 
@@ -153,78 +297,134 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
   );
 };
 
-export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
-  const selectedToppingsData = state.toppings
-    .map(id => TOPPINGS.find(t => t.id === id))
-    .filter((t): t is Topping => !!t)
-    .sort((a, b) => a.zIndex - b.zIndex);
+export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail = false, idPrefix = '' }) => {
+  // Scoped ID helper
+  const sId = (id: string) => `${idPrefix}${id}`;
+
+  // Sort and Prepare Toppings
+  const visuals = useMemo(() => {
+    return state.toppings
+      .map(st => {
+        const t = TOPPINGS.find(top => top.id === st.id);
+        if (!t) return null;
+        
+        // Filter positions based on coverage
+        const validPositions = TOPPING_POSITIONS.filter(pos => {
+          if (st.coverage === 'whole') return true;
+          // Add small buffer (5) to allow some center overlap for natural look
+          if (st.coverage === 'left') return pos.x <= 5; 
+          if (st.coverage === 'right') return pos.x >= -5;
+          return true;
+        });
+
+        return { ...t, ...st, validPositions };
+      })
+      .filter((t): t is Topping & { coverage: ToppingCoverage, validPositions: typeof TOPPING_POSITIONS } => !!t)
+      .sort((a, b) => a.zIndex - b.zIndex);
+  }, [state.toppings]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {/* Wooden Paddle Background */}
-      <motion.div 
-        className="absolute z-0"
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <svg 
-            width="600" 
-            height="600" 
-            viewBox="0 -100 400 600" 
-            className="w-[140vw] h-[140vw] max-w-[900px] max-h-[900px] drop-shadow-2xl opacity-90"
+      {/* Wooden Paddle Background - Hide for thumbnails */}
+      {!isThumbnail && (
+        <motion.div 
+            className="absolute z-0"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
         >
-             <defs>
-                <linearGradient id="woodGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style={{ stopColor: '#8B4513' }} /> 
-                    <stop offset="10%" style={{ stopColor: '#A0522D' }} />
-                    <stop offset="20%" style={{ stopColor: '#8B4513' }} />
-                    <stop offset="30%" style={{ stopColor: '#A0522D' }} />
-                    <stop offset="40%" style={{ stopColor: '#8B4513' }} />
-                    <stop offset="60%" style={{ stopColor: '#A0522D' }} />
-                    <stop offset="80%" style={{ stopColor: '#8B4513' }} />
-                    <stop offset="100%" style={{ stopColor: '#A0522D' }} />
-                </linearGradient>
-            </defs>
-            {/* Paddle Handle */}
-            <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill="url(#woodGradient)" />
-            {/* Paddle Head */}
-            <circle cx="200" cy="200" r="190" fill="url(#woodGradient)" />
-            <circle cx="200" cy="200" r="180" fill="#CD853F" opacity="0.1" />
-        </svg>
-      </motion.div>
+            <svg 
+                width="600" 
+                height="600" 
+                viewBox="0 -100 400 600" 
+                className="w-[140vw] h-[140vw] max-w-[900px] max-h-[900px] drop-shadow-2xl opacity-90"
+            >
+                <defs>
+                    <linearGradient id={sId("woodGradient")} x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style={{ stopColor: '#8B4513' }} /> 
+                        <stop offset="10%" style={{ stopColor: '#A0522D' }} />
+                        <stop offset="20%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="30%" style={{ stopColor: '#A0522D' }} />
+                        <stop offset="40%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="60%" style={{ stopColor: '#A0522D' }} />
+                        <stop offset="80%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="100%" style={{ stopColor: '#A0522D' }} />
+                    </linearGradient>
+                </defs>
+                {/* Paddle Handle */}
+                <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill={`url(#${sId("woodGradient")})`} />
+                {/* Paddle Head */}
+                <circle cx="200" cy="200" r="190" fill={`url(#${sId("woodGradient")})`} />
+                <circle cx="200" cy="200" r="180" fill="#CD853F" opacity="0.1" />
+            </svg>
+        </motion.div>
+      )}
 
       {/* Container for proper aspect ratio scaling */}
       <motion.div 
-        className="relative z-10 w-[75vw] h-[75vw] max-w-[500px] max-h-[500px]"
+        className="relative z-10"
+        style={{
+            width: isThumbnail ? '100%' : '75vw',
+            height: isThumbnail ? '100%' : '75vw',
+            maxWidth: isThumbnail ? 'none' : '500px',
+            maxHeight: isThumbnail ? 'none' : '500px'
+        }}
         animate={{ scale: state.size.scale }}
         transition={{ type: "spring", stiffness: 120, damping: 20 }}
       >
-        <svg viewBox="-110 -110 220 220" className="w-full h-full drop-shadow-xl">
+        <svg viewBox="-110 -110 220 220" className={`w-full h-full ${!isThumbnail && 'drop-shadow-xl'}`}>
           <defs>
-            <radialGradient id="doughGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                <stop offset="70%" stopColor="#FFE4B5" /> 
-                <stop offset="95%" stopColor="#DEB887" /> 
-                <stop offset="100%" stopColor="#CD853F" /> 
+            {/* Base Dough Gradient - Richer, more baked look */}
+            <radialGradient id={sId("doughGradient")} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="70%" stopColor="#F5DEB3" /> 
+                <stop offset="92%" stopColor="#DEB887" /> 
+                <stop offset="100%" stopColor="#C08552" /> 
             </radialGradient>
             
+            {/* Crust 3D Highlight Gradient - Creates the puffy rim effect */}
+            <radialGradient id={sId("crust-highlight")} cx="50%" cy="50%" r="50%">
+                <stop offset="82%" stopColor="rgba(0,0,0,0)" />
+                <stop offset="88%" stopColor="rgba(255,255,255,0.4)" /> {/* Specular highlight on rim top */}
+                <stop offset="95%" stopColor="rgba(0,0,0,0.1)" />
+                <stop offset="100%" stopColor="rgba(0,0,0,0.3)" /> {/* Shadow at edge */}
+            </radialGradient>
+
             {/* Spoon Metallic Gradient */}
-            <radialGradient id="spoonGradient" cx="30%" cy="30%" r="80%">
+            <radialGradient id={sId("spoonGradient")} cx="30%" cy="30%" r="80%">
                 <stop offset="0%" stopColor="#f1f5f9" />
                 <stop offset="50%" stopColor="#94a3b8" />
                 <stop offset="100%" stopColor="#475569" />
             </radialGradient>
 
-            {/* Sauce Edge Roughness Filter */}
-            <filter id="sauce-edge">
-               <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" result="turbulence" />
-               <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="3" xChannelSelector="R" yChannelSelector="G" />
+            {/* Pepperoni Realistic Gradient */}
+            <radialGradient id={sId("pepGradient")} cx="50%" cy="50%" r="50%" fx="35%" fy="35%">
+                <stop offset="0%" stopColor="#EF5350" /> 
+                <stop offset="60%" stopColor="#D32F2F" /> 
+                <stop offset="100%" stopColor="#8E0000" /> 
+            </radialGradient>
+
+            {/* Sauce Edge Roughness Filter - Enhanced for organic flow */}
+            <filter id={sId("sauce-edge")} x="-50%" y="-50%" width="200%" height="200%">
+               {/* Smoother, larger waves for the liquid spread shape */}
+               <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="3" seed="85" result="turbulence" />
+               <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="10" xChannelSelector="R" yChannelSelector="G" />
+               {/* Slight blur to soften pixelation from displacement */}
+               <feGaussianBlur stdDeviation="0.3" />
+            </filter>
+
+            {/* Dough Texture Filter - Realistic baked surface noise */}
+            <filter id={sId("dough-texture")} x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise" />
+                {/* Adjust alpha to make it subtle */}
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.2 0" in="noise" result="coloredNoise"/>
+                <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="composite"/>
+                <feBlend in="SourceGraphic" in2="composite" mode="multiply" />
             </filter>
 
             {/* Sauce Surface Texture Filter */}
-            <filter id="sauce-texture">
-                <feTurbulence type="fractalNoise" baseFrequency="0.15" numOctaves="3" result="noise" />
-                <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.1 0" in="noise" result="coloredNoise"/>
+            <filter id={sId("sauce-texture")} x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="3" seed="12" result="noise" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.1  0 0 0 0 0  0 0 0 0.15 0" in="noise" result="coloredNoise"/>
                 <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="composite"/>
             </filter>
           </defs>
@@ -232,12 +432,17 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
           {/* Crust Shadow */}
           <circle cx="0" cy="4" r="102" fill="rgba(0,0,0,0.2)" />
 
-          {/* Dough Base - Cartoon Style */}
-          {/* Main puff */}
-          <circle cx="0" cy="0" r="100" fill="url(#doughGradient)" stroke="#8B4513" strokeWidth="2" />
+          {/* 1. Base Dough Layer with Texture */}
+          <g filter={`url(#${sId("dough-texture")})`}>
+             {/* Main Dough Shape */}
+             <circle cx="0" cy="0" r="100" fill={`url(#${sId("doughGradient")})`} />
+          </g>
           
-          {/* Crust Texture/Imperfections (Burnt spots/Bubbles) */}
-          <g fill="#B8860B" opacity="0.3">
+          {/* 2. Puffed Crust Highlight Overlay */}
+          <circle cx="0" cy="0" r="100" fill={`url(#${sId("crust-highlight")})`} />
+
+          {/* Crust Imperfections/Burnt spots (Subtle) */}
+          <g fill="#8B4513" opacity="0.15">
              <ellipse cx="-60" cy="-70" rx="4" ry="2" transform="rotate(45 -60 -70)" />
              <ellipse cx="50" cy="-80" rx="5" ry="3" transform="rotate(-20 50 -80)" />
              <ellipse cx="80" cy="20" rx="3" ry="5" transform="rotate(10 80 20)" />
@@ -245,39 +450,39 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
              <ellipse cx="-80" cy="30" rx="4" ry="3" transform="rotate(-45 -80 30)" />
           </g>
 
-          {/* Inner indented area for sauce (Lighter dough color) */}
-          <circle cx="0" cy="0" r="85" fill="#FFF8DC" stroke="#DEB887" strokeWidth="1" opacity="0.9" />
+          {/* 3. Inner "Bed" for Ingredients - Slightly darker/indented area */}
+          <circle cx="0" cy="0" r="86" fill="#EBC79E" opacity="0.8" />
 
           {/* Sauce Layer */}
-          <g filter="url(#sauce-edge)">
+          <g filter={`url(#${sId("sauce-edge")})`}>
             <AnimatePresence mode="wait">
                 <motion.g key={state.sauce.id}>
-                    {/* 1. Base Sauce Color with "Drop then Spread" Animation */}
+                    {/* 1. Base Sauce Color */}
                     <motion.circle 
                         cx="0" 
                         cy="0" 
-                        r="85" 
+                        r="83" 
                         fill={state.sauce.color}
-                        initial={{ r: 0 }}
-                        animate={{ r: [0, 20, 85] }}
-                        exit={{ opacity: 0, duration: 0.2 }}
-                        transition={{ 
+                        initial={isThumbnail ? { r: 83 } : { r: 0 }}
+                        animate={isThumbnail ? { r: 83 } : { r: [0, 20, 83] }}
+                        exit={isThumbnail ? undefined : { opacity: 0, duration: 0.2 }}
+                        transition={isThumbnail ? undefined : { 
                           duration: 1.5, 
-                          times: [0, 0.2, 1], // 0-0.2s: Drop (0->20), 0.2-1.5s: Spread (20->85)
+                          times: [0, 0.2, 1], 
                           ease: "linear"
                         }}
                     />
                     
-                    {/* 2. Texture Overlay (animates with base) */}
+                    {/* 2. Texture Overlay */}
                     <motion.circle
                         cx="0"
                         cy="0"
-                        r="85"
+                        r="83"
                         fill={state.sauce.color}
-                        filter="url(#sauce-texture)"
-                        initial={{ r: 0 }}
-                        animate={{ r: [0, 20, 85] }}
-                        transition={{ 
+                        filter={`url(#${sId("sauce-texture")})`}
+                        initial={isThumbnail ? { r: 83 } : { r: 0 }}
+                        animate={isThumbnail ? { r: 83 } : { r: [0, 20, 83] }}
+                        transition={isThumbnail ? undefined : { 
                           duration: 1.5, 
                           times: [0, 0.2, 1],
                           ease: "linear"
@@ -285,105 +490,73 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
                         opacity="0.6"
                     />
 
-                    {/* 3. Ladle "Swirl" Trail - Visible track of spreading */}
-                    <motion.path 
-                       d={SPIRAL_PATH_D}
-                       fill="none"
-                       stroke="rgba(0,0,0,0.15)"
-                       strokeWidth="20"
-                       strokeLinecap="round"
-                       initial={{ pathLength: 0, opacity: 0 }}
-                       animate={{ 
-                         pathLength: [0, 0, 1], 
-                         opacity: [0, 1, 0] 
-                       }}
-                       transition={{ duration: 1.5, times: [0, 0.2, 1], ease: "linear" }}
-                    />
-                     <motion.path 
-                       d={SPIRAL_PATH_D}
-                       fill="none"
-                       stroke="rgba(255,255,255,0.15)"
-                       strokeWidth="10"
-                       strokeLinecap="round"
-                       initial={{ pathLength: 0, opacity: 0 }}
-                       animate={{ 
-                         pathLength: [0, 0, 1], 
-                         opacity: [0, 1, 0] 
-                       }}
-                       transition={{ duration: 1.5, times: [0, 0.2, 1], ease: "linear" }}
-                       style={{ translateX: -2, translateY: -2 }}
-                    />
-
-                    {/* 4. The Magic Spoon - Animates on top of the sauce */}
-                    <motion.g
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ 
-                            opacity: [0, 1, 1, 0],
-                            scale: [0.5, 1, 1, 0.5] 
-                        }}
-                        transition={{ 
-                            duration: 1.6, 
-                            times: [0, 0.15, 0.9, 1] 
-                        }}
-                    >
-                         {/* Spoon Handle (Subtle hint) */}
-                         <motion.line 
-                             x1="0" y1="0" x2="20" y2="-25"
-                             stroke="#94a3b8"
-                             strokeWidth="6"
-                             strokeLinecap="round"
-                             animate={{
-                                 x1: SPIRAL_FRAMES.x,
-                                 y1: SPIRAL_FRAMES.y,
-                                 x2: SPIRAL_FRAMES.x.map(x => x + 20),
-                                 y2: SPIRAL_FRAMES.y.map(y => y - 25),
-                             }}
-                             transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
-                         />
-                         
-                         {/* Spoon Head */}
-                         <motion.circle
-                            r="12"
-                            fill="url(#spoonGradient)"
-                            stroke="#cbd5e1"
-                            strokeWidth="1"
-                            shadow="0px 4px 4px rgba(0,0,0,0.2)"
-                            animate={{
-                                cx: SPIRAL_FRAMES.x,
-                                cy: SPIRAL_FRAMES.y
-                            }}
-                            transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
-                         />
-                         
-                         {/* Sauce in Spoon (diminishing) */}
-                         <motion.circle
-                            fill={state.sauce.color}
-                            initial={{ r: 10 }}
-                            animate={{ 
-                                cx: SPIRAL_FRAMES.x,
-                                cy: SPIRAL_FRAMES.y,
-                                r: [10, 8, 2, 0]
-                            }}
-                            transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
-                         />
-                    </motion.g>
-
-                    {/* 5. Splatter Particles - Fly out from center on initial drop */}
-                    {[0, 60, 120, 180, 240, 300].map((deg, i) => (
-                         <motion.circle 
-                            key={`splat-${i}`}
-                            cx="0" cy="0" r={2 + Math.random() * 2}
-                            fill={state.sauce.color}
-                            initial={{ cx: 0, cy: 0, scale: 0, opacity: 1 }}
-                            animate={{ 
-                                cx: Math.cos(deg * Math.PI / 180) * (25 + Math.random() * 10),
-                                cy: Math.sin(deg * Math.PI / 180) * (25 + Math.random() * 10),
-                                scale: 1,
-                                opacity: 0
-                            }}
-                            transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-                         />
-                    ))}
+                    {/* Spoon & Trail Animations - Disable for thumbnail */}
+                    {!isThumbnail && (
+                        <>
+                            <motion.path 
+                                d={SPIRAL_PATH_D}
+                                fill="none"
+                                stroke="rgba(0,0,0,0.15)"
+                                strokeWidth="20"
+                                strokeLinecap="round"
+                                initial={{ pathLength: 0, opacity: 0 }}
+                                animate={{ pathLength: [0, 0, 1], opacity: [0, 1, 0] }}
+                                transition={{ duration: 1.5, times: [0, 0.2, 1], ease: "linear" }}
+                            />
+                             <motion.path 
+                                d={SPIRAL_PATH_D}
+                                fill="none"
+                                stroke="rgba(255,255,255,0.15)"
+                                strokeWidth="10"
+                                strokeLinecap="round"
+                                initial={{ pathLength: 0, opacity: 0 }}
+                                animate={{ pathLength: [0, 0, 1], opacity: [0, 1, 0] }}
+                                transition={{ duration: 1.5, times: [0, 0.2, 1], ease: "linear" }}
+                                style={{ translateX: -2, translateY: -2 }}
+                            />
+                            <motion.g
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1, 0.5] }}
+                                transition={{ duration: 1.6, times: [0, 0.15, 0.9, 1] }}
+                            >
+                                <motion.line 
+                                    x1="0" y1="0" x2="20" y2="-25"
+                                    stroke="#94a3b8" strokeWidth="6" strokeLinecap="round"
+                                    animate={{
+                                        x1: SPIRAL_FRAMES.x, y1: SPIRAL_FRAMES.y,
+                                        x2: SPIRAL_FRAMES.x.map(x => x + 20), y2: SPIRAL_FRAMES.y.map(y => y - 25),
+                                    }}
+                                    transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
+                                />
+                                <motion.circle
+                                    r="12" fill={`url(#${sId("spoonGradient")})`}
+                                    stroke="#cbd5e1" strokeWidth="1"
+                                    animate={{ cx: SPIRAL_FRAMES.x, cy: SPIRAL_FRAMES.y }}
+                                    transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
+                                />
+                                <motion.circle
+                                    fill={state.sauce.color}
+                                    initial={{ r: 10 }}
+                                    animate={{ cx: SPIRAL_FRAMES.x, cy: SPIRAL_FRAMES.y, r: [10, 8, 2, 0] }}
+                                    transition={{ duration: 1.3, delay: 0.2, ease: "linear" }}
+                                />
+                            </motion.g>
+                            {[0, 60, 120, 180, 240, 300].map((deg, i) => (
+                                <motion.circle 
+                                    key={`splat-${i}`}
+                                    cx="0" cy="0" r={2 + Math.random() * 2}
+                                    fill={state.sauce.color}
+                                    initial={{ cx: 0, cy: 0, scale: 0, opacity: 1 }}
+                                    animate={{ 
+                                        cx: Math.cos(deg * Math.PI / 180) * (25 + Math.random() * 10),
+                                        cy: Math.sin(deg * Math.PI / 180) * (25 + Math.random() * 10),
+                                        scale: 1, opacity: 0
+                                    }}
+                                    transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                                />
+                            ))}
+                        </>
+                    )}
                 </motion.g>
             </AnimatePresence>
           </g>
@@ -392,9 +565,9 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
             <AnimatePresence>
                 <motion.g 
                     key={`${state.sauce.id}-herbs`}
-                    initial={{ opacity: 0 }}
+                    initial={isThumbnail ? { opacity: 0.4 } : { opacity: 0 }}
                     animate={{ opacity: 0.4 }}
-                    transition={{ delay: 1.4 }}
+                    transition={isThumbnail ? undefined : { delay: 1.4 }}
                 >
                    <path d="M-20 -20 L20 20 M20 -20 L-20 20" stroke="#FEF3C7" strokeWidth="40" strokeLinecap="round" strokeDasharray="10 30" />
                 </motion.g>
@@ -403,24 +576,29 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state }) => {
 
           {/* Toppings Layer */}
           <AnimatePresence>
-            {selectedToppingsData.map((topping, layerIndex) => (
-              <g 
-                key={topping.id}
-                // Rotate each layer slightly so toppings don't stack directly on top of each other
-                // Use a prime-ish number to distribute overlaps
-                transform={`rotate(${layerIndex * 67})`}
-              >
-                {TOPPING_POSITIONS.map((pos, index) => (
-                  <ToppingShape 
-                    key={`${topping.id}-${index}`}
-                    type={topping.id}
-                    color={topping.color}
-                    position={pos}
-                    index={index}
-                  />
-                ))}
-              </g>
-            ))}
+            {visuals.map((topping, layerIndex) => {
+               const offsetX = Math.cos(layerIndex * 2.5) * 4;
+               const offsetY = Math.sin(layerIndex * 2.5) * 4;
+
+               return (
+                <g 
+                    key={topping.id}
+                    style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}
+                >
+                    {topping.validPositions.map((pos, index) => (
+                    <ToppingShape 
+                        key={`${topping.id}-${index}`}
+                        type={topping.id}
+                        color={topping.color}
+                        position={pos}
+                        index={index}
+                        isThumbnail={!!isThumbnail}
+                        idPrefix={idPrefix}
+                    />
+                    ))}
+                </g>
+               );
+            })}
           </AnimatePresence>
         </svg>
       </motion.div>

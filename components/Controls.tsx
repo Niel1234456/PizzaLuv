@@ -1,13 +1,14 @@
 import React from 'react';
-import { Size, Sauce, Topping } from '../types';
+import { Size, Sauce, SelectedTopping } from '../types';
 import { SIZES, SAUCES, TOPPINGS } from '../constants';
-import { Check, Circle } from 'lucide-react';
+import { Check, Circle, CircleDashed, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { soundEffects } from '../utils/sound';
 
 interface ControlsProps {
   currentSize: Size;
   currentSauce: Sauce;
-  selectedToppings: string[];
+  selectedToppings: SelectedTopping[];
   activeTab: 'size' | 'sauce' | 'toppings';
   onSetSize: (size: Size) => void;
   onSetSauce: (sauce: Sauce) => void;
@@ -25,6 +26,12 @@ export const Controls: React.FC<ControlsProps> = ({
   onToggleTopping,
   onTabChange
 }) => {
+
+  const handleTabChange = (tab: 'size' | 'sauce' | 'toppings') => {
+      soundEffects.select();
+      onTabChange(tab);
+  };
+
   return (
     <div className="w-full flex flex-col h-full">
       {/* Modern Segmented Control Tab Bar */}
@@ -32,7 +39,7 @@ export const Controls: React.FC<ControlsProps> = ({
         {(['size', 'sauce', 'toppings'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => onTabChange(tab)}
+            onClick={() => handleTabChange(tab)}
             className={`flex-1 relative py-3 rounded-xl text-sm font-bold transition-colors z-10 capitalize ${activeTab === tab ? 'text-orange-600' : 'text-gray-500 hover:text-gray-700'}`}
           >
             {activeTab === tab && (
@@ -67,7 +74,10 @@ export const Controls: React.FC<ControlsProps> = ({
                 {SIZES.map((size) => (
                   <button
                     key={size.id}
-                    onClick={() => onSetSize(size)}
+                    onClick={() => {
+                        soundEffects.select();
+                        onSetSize(size);
+                    }}
                     className={`w-full max-w-sm flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${
                       currentSize.id === size.id
                         ? 'border-orange-500 bg-orange-50/50 shadow-lg shadow-orange-100'
@@ -114,7 +124,10 @@ export const Controls: React.FC<ControlsProps> = ({
                 {SAUCES.map((sauce) => (
                   <button
                     key={sauce.id}
-                    onClick={() => onSetSauce(sauce)}
+                    onClick={() => {
+                        soundEffects.select();
+                        onSetSauce(sauce);
+                    }}
                     className={`relative overflow-hidden group p-4 rounded-2xl border-2 transition-all h-40 flex flex-col items-center justify-center gap-3 ${
                         currentSauce.id === sauce.id 
                         ? 'border-orange-500 bg-white shadow-lg' 
@@ -122,10 +135,15 @@ export const Controls: React.FC<ControlsProps> = ({
                     }`}
                   >
                     <motion.div 
-                        className="w-16 h-16 rounded-full shadow-inner border-4 border-white"
-                        style={{ backgroundColor: sauce.color }}
+                        className="w-16 h-16 rounded-full shadow-inner border-4 border-white overflow-hidden flex items-center justify-center bg-white"
                         whileHover={{ scale: 1.1 }}
-                    />
+                    >
+                        {sauce.iconUrl ? (
+                            <img src={sauce.iconUrl} alt={sauce.name} className="w-full h-full object-contain p-2" />
+                        ) : (
+                            <div className="w-full h-full" style={{ backgroundColor: sauce.color }} />
+                        )}
+                    </motion.div>
                     <div className="text-center z-10">
                         <div className="font-bold text-gray-800">{sauce.name}</div>
                         <div className="text-xs text-gray-500 font-medium">{sauce.price === 0 ? 'Included' : `+$${sauce.price}`}</div>
@@ -151,11 +169,19 @@ export const Controls: React.FC<ControlsProps> = ({
             >
               <div className="text-center mb-6">
                 <h3 className="text-lg font-bold text-gray-800">Add Toppings</h3>
-                <p className="text-gray-500 text-sm">Make it yours.</p>
+                <p className="text-gray-500 text-sm">Tap to cycle: Whole → Left → Right</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {TOPPINGS.map((topping) => {
-                  const isSelected = selectedToppings.includes(topping.id);
+                  const selectedTopping = selectedToppings.find(t => t.id === topping.id);
+                  const isSelected = !!selectedTopping;
+                  const coverage = selectedTopping?.coverage;
+
+                  // Adjust price based on size multiplier and coverage
+                  // Assuming half toppings are 50% price
+                  const basePrice = topping.price * currentSize.toppingPriceMultiplier;
+                  const displayPrice = isSelected && coverage !== 'whole' ? basePrice * 0.5 : basePrice;
+
                   return (
                     <motion.button
                       key={topping.id}
@@ -168,22 +194,42 @@ export const Controls: React.FC<ControlsProps> = ({
                           : 'border-transparent bg-white/60 hover:bg-white hover:border-green-200'}
                       `}
                     >
-                      <div className="w-12 h-12 mb-2 relative">
-                         {/* Abstract representation of the topping for the button */}
-                         <div className="w-full h-full rounded-full opacity-80" style={{ backgroundColor: topping.color }} />
+                      <div className="w-12 h-12 mb-2 relative flex items-center justify-center">
+                         {topping.iconUrl ? (
+                             <img 
+                                src={topping.iconUrl} 
+                                alt={topping.name} 
+                                className={`w-10 h-10 object-contain drop-shadow-sm transition-all duration-300 ${isSelected ? 'scale-110' : 'opacity-80 scale-100 grayscale-[30%]'}`}
+                             />
+                         ) : (
+                             <div className="w-full h-full rounded-full opacity-80" style={{ backgroundColor: topping.color }} />
+                         )}
+                         
+                         {/* Mode Indicator Badge */}
                          {isSelected && (
                              <motion.div 
+                                key={coverage}
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-0.5"
+                                className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1 shadow-sm"
                              >
-                                <Check size={12} strokeWidth={4} />
+                                {coverage === 'whole' && <Circle size={12} fill="currentColor" />}
+                                {coverage === 'left' && <div className="w-3 h-3 rounded-full bg-white relative overflow-hidden"><div className="absolute left-0 top-0 w-1.5 h-3 bg-green-600"></div></div>}
+                                {coverage === 'right' && <div className="w-3 h-3 rounded-full bg-white relative overflow-hidden"><div className="absolute right-0 top-0 w-1.5 h-3 bg-green-600"></div></div>}
                              </motion.div>
                          )}
                       </div>
                       
                       <span className="font-bold text-sm text-gray-800 text-center leading-tight">{topping.name}</span>
-                      <span className="text-xs text-gray-500 font-medium mt-1">+${topping.price.toFixed(2)}</span>
+                      <span className="text-xs text-gray-500 font-medium mt-1">
+                        {isSelected && coverage !== 'whole' ? 'Half ' : ''}+${displayPrice.toFixed(2)}
+                      </span>
+                      
+                      {isSelected && (
+                        <div className="mt-1 text-[10px] text-green-700 font-bold uppercase tracking-wider">
+                            {coverage === 'whole' ? 'Whole' : coverage === 'left' ? 'Left Half' : 'Right Half'}
+                        </div>
+                      )}
                     </motion.button>
                   );
                 })}
