@@ -6,7 +6,7 @@ import { OrderModal } from './components/OrderModal';
 import { RecommendedSidebar } from './components/RecommendedSidebar';
 import { PizzaState, Size, Sauce, SelectedTopping, RecommendedPizza, Crust, Cut } from './types';
 import { SIZES, SAUCES, TOPPINGS, CRUSTS, CUTS } from './constants';
-import { ShoppingCart, RotateCcw, ChevronRight, ArrowRight, Flame } from 'lucide-react';
+import { ShoppingCart, RotateCcw, ArrowRight, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { soundEffects } from './utils/sound';
 

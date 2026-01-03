@@ -11,21 +11,52 @@
     <style>
       body {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #F8FAFC;
-        /* Modern subtle mesh gradient background */
-        background-image: 
-          radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
-          radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
-          radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+        background-color: #F8FAFC; /* Slate 50 fallback */
+        margin: 0;
+        overflow: hidden; /* Prevent body scroll, handle in app */
       }
-      /* Custom scrollbar for toppings list */
-      .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+
+      /* 1. Fallback Pattern (Subtle Doodles) - Shows if image fails or loads slowly */
+      #bg-fallback {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -3;
+        background-color: #F8FAFC; 
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CBD5E1' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       }
-      .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+
+      /* 2. Primary Background Image */
+      #bg-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+        z-index: -2;
+        opacity: 0; /* Starts hidden, fades in on load */
+        transition: opacity 0.8s ease-in;
       }
+
+      /* 3. Frosting Overlay - Essential for text readability on busy backgrounds */
+      #app-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1; 
+        pointer-events: none;
+        /* White fade + Blur to make the UI pop against the colorful ingredients */
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(3px); 
+      }
+      
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
   <script type="importmap">
 {
@@ -43,8 +74,25 @@
 }
 </script>
 </head>
-  <body class="text-slate-800 antialiased overflow-x-hidden h-screen w-screen overflow-hidden bg-slate-50 selection:bg-orange-100 selection:text-orange-600">
-    <div class="fixed inset-0 -z-10 h-full w-full bg-white [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#fed7aa_100%)]"></div>
-    <div id="root" class="h-full w-full"></div>
+  <body class="text-slate-800 antialiased overflow-x-hidden h-screen w-screen selection:bg-orange-500 selection:text-white">
+    
+    <!-- 1. Fallback Layer -->
+    <div id="bg-fallback"></div>
+
+    <!-- 2. High-Quality Image (Ingredients on White) -->
+    <!-- Using a high-res Unsplash equivalent of the requested iStock image -->
+    <img 
+      id="bg-image" 
+      src="https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2671&q=80" 
+      alt="Pizza Ingredients Background"
+      onload="this.style.opacity='1'"
+      onerror="this.style.display='none'"
+    />
+
+    <!-- 3. UI Contrast Overlay -->
+    <div id="app-overlay"></div>
+    
+    <!-- 4. The App -->
+    <div id="root" class="h-full w-full relative z-10"></div>
   </body>
 </html>

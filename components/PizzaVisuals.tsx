@@ -314,99 +314,57 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
         return <circle cx="0" cy="0" r="5" fill={color} />;
     }
   };
-
-  return (
-    <motion.g
-      initial={isThumbnail ? undefined : { opacity: 0, scale: 0, y: -40 }}
-      animate={{ 
-        opacity: 1, 
-        scale: position.scale, 
-        y: 0,
-        rotate: position.rotation
-      }}
-      exit={isThumbnail ? undefined : { opacity: 0, scale: 0 }}
-      transition={{ 
-        duration: 0.4, 
-        delay: index * 0.02, 
-        type: "spring",
-        stiffness: 200,
-        damping: 15
-      }}
-      style={{
-        translateX: position.x,
-        translateY: position.y,
-      }}
-    >
-      {renderShape()}
-    </motion.g>
-  );
+  return <g transform={`translate(${position.x}, ${position.y}) scale(${position.scale})`}>{renderShape()}</g>;
 };
 
 export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail = false, idPrefix = '' }) => {
-  // Scoped ID helper
   const sId = (id: string) => `${idPrefix}${id}`;
-  const crustId = state.crust?.id || 'hand_tossed';
-  const cutId = state.cut?.id || 'classic';
+  
+  const crustId = state.crust.id;
+  const cutId = state.cut.id;
 
-  // Determine Crust Visual Properties
   const crustVisuals = useMemo(() => {
-    switch(crustId) {
-        case 'thin': 
-            return { innerRadius: 94, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] };
-        case 'stuffed':
-            return { innerRadius: 78, gradientColors: ['#F5DEB3', '#DEB887', '#CD853F'] }; // Thick rim
-        case 'pan':
-            return { innerRadius: 88, gradientColors: ['#E6BE8A', '#CD853F', '#A0522D'] }; // Darker, fried look
-        case 'neapolitan':
-            return { innerRadius: 82, gradientColors: ['#F5DEB3', '#DEB887', '#8B4513'] }; // High contrast
-        case 'whole_wheat':
-            return { innerRadius: 86, gradientColors: ['#D2B48C', '#A0522D', '#8B4513'] }; // Brown
-        case 'gluten_free':
-            return { innerRadius: 88, gradientColors: ['#FFF8DC', '#F0E68C', '#BDB76B'] }; // Pale
-        case 'ny_foldable':
-            return { innerRadius: 90, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] }; // Wide
-        default: // Hand Tossed
-            return { innerRadius: 86, gradientColors: ['#F5DEB3', '#DEB887', '#C08552'] };
+    switch (state.crust.id) {
+        case 'thin': return { innerRadius: 92, gradientColors: ['#EBC79E', '#D4A373', '#CCA265'] };
+        case 'stuffed': return { innerRadius: 82, gradientColors: ['#EBC79E', '#D4A373', '#CCA265'] }; // Thicker rim
+        case 'pan': return { innerRadius: 85, gradientColors: ['#F3D0A3', '#E0B580', '#D6A66B'] }; // Golden
+        case 'neapolitan': return { innerRadius: 85, gradientColors: ['#EBC79E', '#C89458', '#453018'] }; // Charred
+        case 'whole_wheat': return { innerRadius: 88, gradientColors: ['#D6B690', '#A88560', '#856445'] }; // Brown
+        case 'gluten_free': return { innerRadius: 90, gradientColors: ['#F2E4CF', '#E6D0B0', '#D1B894'] }; // Pale
+        default: return { innerRadius: 88, gradientColors: ['#EBC79E', '#D4A373', '#CCA265'] }; // Classic
     }
-  }, [crustId]);
+  }, [state.crust.id]);
 
-  // Sort and Prepare Toppings
   const visuals = useMemo(() => {
-    return state.toppings
-      .map(st => {
-        const t = TOPPINGS.find(top => top.id === st.id);
-        if (!t) return null;
+    // Sort toppings by zIndex so they layer correctly
+    const sortedToppings = [...state.toppings].sort((a, b) => {
+         const tA = TOPPINGS.find(t => t.id === a.id);
+         const tB = TOPPINGS.find(t => t.id === b.id);
+         return (tA?.zIndex || 0) - (tB?.zIndex || 0);
+    });
+
+    return sortedToppings.map((selected) => {
+        const toppingInfo = TOPPINGS.find(t => t.id === selected.id);
+        if (!toppingInfo) return null;
         
-        // Filter positions based on coverage
-        const validPositions = TOPPING_POSITIONS.filter(pos => {
-          if (st.coverage === 'whole') return true;
-          // Add small buffer (5) to allow some center overlap for natural look
-          if (st.coverage === 'left') return pos.x <= 5; 
-          if (st.coverage === 'right') return pos.x >= -5;
-          return true;
-        });
-
-        // Filter positions based on crust inner radius (keep toppings off the rim)
-        // We assume max possible radius in constant is ~83ish.
-        // We scale valid positions if the crust is very thick (like stuffed)
-        const scaleFactor = crustVisuals.innerRadius < 80 ? 0.9 : 1;
-
-        return { 
-            ...t, 
-            ...st, 
-            validPositions: validPositions.map(p => ({
-                ...p, 
-                x: p.x * scaleFactor, 
-                y: p.y * scaleFactor 
-            })) 
+        let validPositions = TOPPING_POSITIONS;
+        // Filter based on coverage
+        if (selected.coverage === 'left') {
+            validPositions = TOPPING_POSITIONS.filter(p => p.x < 15);
+        } else if (selected.coverage === 'right') {
+            validPositions = TOPPING_POSITIONS.filter(p => p.x > -15);
+        }
+        
+        return {
+            ...toppingInfo,
+            validPositions
         };
-      })
-      .filter((t): t is Topping & { coverage: ToppingCoverage, validPositions: typeof TOPPING_POSITIONS } => !!t);
-      // Sorting removed to respect user selection order
-  }, [state.toppings, crustVisuals.innerRadius]);
+    }).filter((t): t is (Topping & { validPositions: typeof TOPPING_POSITIONS }) => !!t);
+  }, [state.toppings]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
+      
       {/* Wooden Paddle Background - Hide for thumbnails */}
       {!isThumbnail && (
         <motion.div 
@@ -423,21 +381,21 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
             >
                 <defs>
                     <linearGradient id={sId("woodGradient")} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style={{ stopColor: '#8B4513' }} /> 
-                        <stop offset="10%" style={{ stopColor: '#A0522D' }} />
-                        <stop offset="20%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="30%" style={{ stopColor: '#A0522D' }} />
-                        <stop offset="40%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="60%" style={{ stopColor: '#A0522D' }} />
-                        <stop offset="80%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="100%" style={{ stopColor: '#A0522D' }} />
+                        <stop offset="0%" style={{ stopColor: '#5D2E14' }} /> {/* Darker wood */}
+                        <stop offset="10%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="20%" style={{ stopColor: '#5D2E14' }} />
+                        <stop offset="30%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="40%" style={{ stopColor: '#5D2E14' }} />
+                        <stop offset="60%" style={{ stopColor: '#8B4513' }} />
+                        <stop offset="80%" style={{ stopColor: '#5D2E14' }} />
+                        <stop offset="100%" style={{ stopColor: '#8B4513' }} />
                     </linearGradient>
                 </defs>
                 {/* Paddle Handle */}
                 <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill={`url(#${sId("woodGradient")})`} />
                 {/* Paddle Head */}
                 <circle cx="200" cy="200" r="190" fill={`url(#${sId("woodGradient")})`} />
-                <circle cx="200" cy="200" r="180" fill="#CD853F" opacity="0.1" />
+                <circle cx="200" cy="200" r="180" fill="#A0522D" opacity="0.15" />
             </svg>
         </motion.div>
       )}
@@ -539,6 +497,34 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
              <ellipse cx="-80" cy="30" rx="4" ry="3" transform="rotate(-45 -80 30)" />
           </g>
 
+          {/* Stuffed Crust Indicator: Subtle ring of cheese */}
+          {crustId === 'stuffed' && (
+            <motion.g
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                {/* The cheese filling glow inside the rim */}
+                <circle 
+                    cx="0" cy="0" r="88" 
+                    fill="none" 
+                    stroke="#FFF7ED" 
+                    strokeWidth="12" 
+                    strokeOpacity="0.4"
+                    filter={`url(#${sId("melted-glow")})`}
+                />
+                {/* A slightly more defined inner edge to suggest the seam */}
+                <circle 
+                    cx="0" cy="0" r="82" 
+                    fill="none" 
+                    stroke="#FEF3C7" 
+                    strokeWidth="2" 
+                    strokeOpacity="0.6"
+                    strokeDasharray="10 5"
+                />
+            </motion.g>
+          )}
+
           {/* 3. Inner "Bed" for Ingredients - Radius changes based on crust type */}
           <motion.circle 
               cx="0" cy="0" 
@@ -560,7 +546,7 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                         animate={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: [0, 20, crustVisuals.innerRadius - 3] }}
                         fill={state.sauce.color}
                         initial={isThumbnail ? { r: crustVisuals.innerRadius - 3 } : { r: 0 }}
-                        exit={isThumbnail ? undefined : { opacity: 0, duration: 0.2 }}
+                        exit={isThumbnail ? undefined : { opacity: 0, transition: { duration: 0.2 } }}
                         transition={isThumbnail ? { duration: 0.4 } : { 
                           duration: 1.5, 
                           times: [0, 0.2, 1], 
@@ -675,9 +661,12 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                const offsetY = Math.sin(layerIndex * 2.5) * 4;
 
                return (
-                <g 
+                <motion.g 
                     key={topping.id}
-                    style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1, x: offsetX, y: offsetY }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.3 }}
                 >
                     {topping.validPositions.map((pos, index) => (
                     <ToppingShape 
@@ -690,7 +679,7 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                         idPrefix={idPrefix}
                     />
                     ))}
-                </g>
+                </motion.g>
                );
             })}
           </AnimatePresence>
