@@ -336,14 +336,8 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
   }, [state.crust.id]);
 
   const visuals = useMemo(() => {
-    // Sort toppings by zIndex so they layer correctly
-    const sortedToppings = [...state.toppings].sort((a, b) => {
-         const tA = TOPPINGS.find(t => t.id === a.id);
-         const tB = TOPPINGS.find(t => t.id === b.id);
-         return (tA?.zIndex || 0) - (tB?.zIndex || 0);
-    });
-
-    return sortedToppings.map((selected) => {
+    // Rely solely on state.toppings order for layering (User selection order)
+    return state.toppings.map((selected) => {
         const toppingInfo = TOPPINGS.find(t => t.id === selected.id);
         if (!toppingInfo) return null;
         

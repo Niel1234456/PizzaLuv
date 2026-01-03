@@ -4,10 +4,11 @@ import { Controls } from './components/Controls';
 import { CrustSidebar } from './components/CrustSidebar';
 import { OrderModal } from './components/OrderModal';
 import { RecommendedSidebar } from './components/RecommendedSidebar';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { PizzaState, Size, Sauce, SelectedTopping, RecommendedPizza, Crust, Cut } from './types';
 import { SIZES, SAUCES, TOPPINGS, CRUSTS, CUTS } from './constants';
-import { ShoppingCart, RotateCcw, ArrowRight, Flame } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShoppingCart, RotateCcw, ArrowRight, Flame, Utensils, ShoppingBag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { soundEffects } from './utils/sound';
 
 const INITIAL_STATE: PizzaState = {
@@ -19,8 +20,13 @@ const INITIAL_STATE: PizzaState = {
 };
 
 type Tab = 'size' | 'sauce' | 'toppings';
+type AppMode = 'welcome' | 'builder';
+type DiningOption = 'dine-in' | 'takeout' | null;
 
 const App: React.FC = () => {
+  const [appMode, setAppMode] = useState<AppMode>('welcome');
+  const [diningOption, setDiningOption] = useState<DiningOption>(null);
+  
   const [pizzaState, setPizzaState] = useState<PizzaState>(INITIAL_STATE);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('size');
@@ -64,6 +70,11 @@ const App: React.FC = () => {
   }, [pizzaState]);
 
   // Handlers
+  const handleStartApp = (option: 'dine-in' | 'takeout') => {
+      setDiningOption(option);
+      setAppMode('builder');
+  };
+
   const handleSetSize = (size: Size) => {
     setPizzaState((prev) => ({ ...prev, size }));
   };
@@ -146,10 +157,21 @@ const App: React.FC = () => {
     setIsOrderModalOpen(false);
     setPizzaState(INITIAL_STATE);
     setActiveTab('size');
+    // Optionally go back to welcome screen? keeping at builder for now for easier re-ordering
   };
 
+  // Render Welcome Screen if not started
+  if (appMode === 'welcome') {
+      return <WelcomeScreen onStart={handleStartApp} />;
+  }
+
   return (
-    <div className="h-full w-full flex flex-col md:flex-row relative overflow-hidden">
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="h-full w-full flex flex-col md:flex-row relative overflow-hidden"
+    >
       
       {/* Mobile Header */}
       <div className="md:hidden absolute top-4 left-4 z-30 flex items-center gap-2">
@@ -157,6 +179,21 @@ const App: React.FC = () => {
              <span className="font-bold text-xl">🍕</span>
          </div>
          <h1 className="text-xl font-bold tracking-tight text-slate-800">PizzaCraft</h1>
+      </div>
+
+      {/* Header Info (Dining Option) */}
+      <div className="absolute top-4 left-4 md:left-[320px] z-30 hidden md:flex items-center gap-2 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/50 shadow-sm">
+          {diningOption === 'dine-in' ? (
+              <>
+                <Utensils size={14} className="text-orange-600" />
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Dine In</span>
+              </>
+          ) : (
+              <>
+                <ShoppingBag size={14} className="text-blue-600" />
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Take Out</span>
+              </>
+          )}
       </div>
 
       {/* Reset Button - Floating Top Right */}
@@ -270,7 +307,7 @@ const App: React.FC = () => {
         state={pizzaState}
         totalPrice={totalPrice}
       />
-    </div>
+    </motion.div>
   );
 };
 
