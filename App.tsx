@@ -174,24 +174,24 @@ const App: React.FC = () => {
     >
       
       {/* Mobile Header */}
-      <div className="md:hidden absolute top-4 left-4 z-30 flex items-center gap-2">
-         <div className="bg-orange-600 text-white p-2.5 rounded-2xl shadow-lg shadow-orange-500/20">
-             <span className="font-bold text-xl">🍕</span>
+      <div className="md:hidden absolute top-4 left-4 z-30 flex items-center gap-3">
+         <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-orange-100">
+             <img src="https://cdn-icons-png.flaticon.com/512/3513/3513759.png" alt="Logo" className="w-8 h-8 object-contain" />
          </div>
-         <h1 className="text-xl font-bold tracking-tight text-slate-800">PizzaCraft</h1>
+         <h1 className="text-3xl font-pizza-logo tracking-wide drop-shadow-sm">PizzaLuv</h1>
       </div>
 
       {/* Header Info (Dining Option) */}
-      <div className="absolute top-4 left-4 md:left-[320px] z-30 hidden md:flex items-center gap-2 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/50 shadow-sm">
+      <div className="absolute top-4 left-4 md:left-[320px] z-30 hidden md:flex items-center gap-2 bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/50 shadow-sm ring-1 ring-orange-500/10">
           {diningOption === 'dine-in' ? (
               <>
                 <Utensils size={14} className="text-orange-600" />
-                <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Dine In</span>
+                <span className="text-xs font-bold text-orange-900 uppercase tracking-wide">Dine In</span>
               </>
           ) : (
               <>
-                <ShoppingBag size={14} className="text-blue-600" />
-                <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Take Out</span>
+                <ShoppingBag size={14} className="text-red-600" />
+                <span className="text-xs font-bold text-red-900 uppercase tracking-wide">Take Out</span>
               </>
           )}
       </div>
@@ -199,7 +199,7 @@ const App: React.FC = () => {
       {/* Reset Button - Floating Top Right */}
       <button 
         onClick={handleReset}
-        className="absolute top-4 right-4 z-30 bg-white/80 backdrop-blur-md text-slate-600 p-3 rounded-full shadow-sm hover:shadow-md hover:bg-white hover:text-red-500 transition-all border border-white/50"
+        className="absolute top-4 right-4 z-30 bg-white/80 backdrop-blur-md text-orange-900 p-3 rounded-full shadow-sm hover:shadow-md hover:bg-white hover:text-red-600 transition-all border border-orange-100 ring-1 ring-orange-500/10"
         title="Reset Pizza"
       >
         <RotateCcw size={18} strokeWidth={2.5} />
@@ -219,7 +219,7 @@ const App: React.FC = () => {
 
       {/* Right Sidebar 1: Crust & Cut Options (Moved to Inner Right) */}
       <motion.div 
-        className="hidden md:flex flex-col h-[92vh] w-[240px] absolute right-[320px] top-[4vh] bg-white/60 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] border border-white/40 ring-1 ring-black/5 z-10"
+        className="hidden md:flex flex-col h-[92vh] w-[240px] absolute right-[320px] top-[4vh] bg-white/60 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(251,146,60,0.15)] border border-white/60 ring-1 ring-orange-100 z-10"
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4, type: "spring", damping: 20 }}
@@ -234,13 +234,13 @@ const App: React.FC = () => {
 
       {/* Right Sidebar 2: Main Controls (Moved to Outer Right) */}
       <motion.div 
-        className="h-[45%] md:h-[92vh] md:w-[300px] md:absolute md:right-4 md:top-[4vh] w-full bg-white/70 backdrop-blur-xl md:rounded-[2rem] rounded-t-[2rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] md:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] flex flex-col border border-white/40 ring-1 ring-black/5 z-20"
+        className="h-[45%] md:h-[92vh] md:w-[300px] md:absolute md:right-4 md:top-[4vh] w-full bg-white/80 backdrop-blur-xl md:rounded-[2rem] rounded-t-[2rem] shadow-[0_20px_40px_-10px_rgba(251,146,60,0.15)] md:shadow-[0_20px_50px_-12px_rgba(251,146,60,0.2)] flex flex-col border border-white/60 ring-1 ring-orange-100 z-20"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2, type: "spring", damping: 20 }}
       >
         {/* Handle for mobile visual cue */}
-        <div className="w-12 h-1 bg-slate-200 rounded-full mx-auto mt-3 mb-1 md:hidden" />
+        <div className="w-12 h-1 bg-orange-200 rounded-full mx-auto mt-3 mb-1 md:hidden" />
 
         <div className="flex-1 overflow-hidden pt-4 flex flex-col">
             <Controls 
@@ -256,17 +256,17 @@ const App: React.FC = () => {
         </div>
 
         {/* Bottom Action Bar */}
-        <div className="p-4 bg-white/60 border-t border-slate-100/50 backdrop-blur-xl md:rounded-b-[2rem]">
+        <div className="p-4 bg-white/60 border-t border-orange-100/50 backdrop-blur-xl md:rounded-b-[2rem]">
            <div className="flex items-center justify-between gap-3">
               <div className="flex flex-col">
-                 <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Total</span>
+                 <span className="text-[9px] text-orange-700/60 font-bold uppercase tracking-wider mb-0.5">Total</span>
                  <motion.span 
                     key={totalPrice}
                     initial={{ scale: 1.1, color: "#f97316" }}
-                    animate={{ scale: 1, color: "#0f172a" }}
-                    className="text-xl font-extrabold text-slate-900 leading-none"
+                    animate={{ scale: 1, color: "#c2410c" }}
+                    className="text-2xl font-black text-orange-700 leading-none"
                  >
-                    ${totalPrice.toFixed(2)}
+                    ₱{totalPrice.toFixed(2)}
                  </motion.span>
                  <motion.div 
                     key={totalCalories}
@@ -274,14 +274,14 @@ const App: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex items-center gap-1 mt-1 text-slate-500"
                  >
-                     <Flame size={12} className="text-orange-400 fill-orange-400" />
-                     <span className="text-xs font-semibold">{totalCalories} cal</span>
+                     <Flame size={12} className="text-orange-500 fill-orange-500" />
+                     <span className="text-xs font-bold text-orange-600/80">{totalCalories} cal</span>
                  </motion.div>
               </div>
               
               <button 
                 onClick={handleNextStep}
-                className="flex-1 bg-slate-900 hover:bg-black text-white px-4 py-3 rounded-2xl font-bold text-xs shadow-xl shadow-slate-900/10 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group"
+                className="flex-1 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 hover:from-red-700 hover:via-orange-600 hover:to-yellow-600 text-white px-4 py-3 rounded-2xl font-bold text-xs shadow-xl shadow-orange-500/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group border border-white/20"
               >
                 {activeTab === 'toppings' ? (
                     <>

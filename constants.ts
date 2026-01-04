@@ -1,21 +1,21 @@
 import { Size, Sauce, Topping, RecommendedPizza, Crust, Cut } from './types';
 
 export const SIZES: Size[] = [
-  { id: 's', name: 'Small (10")', price: 10, calories: 600, scale: 0.85, toppingPriceMultiplier: 0.8 },
-  { id: 'm', name: 'Medium (12")', price: 14, calories: 900, scale: 1, toppingPriceMultiplier: 1 },
-  { id: 'l', name: 'Large (14")', price: 18, calories: 1200, scale: 1.15, toppingPriceMultiplier: 1.2 },
-  { id: 'xl', name: 'Extra Large (16")', price: 22, calories: 1500, scale: 1.3, toppingPriceMultiplier: 1.4 },
+  { id: 's', name: 'Small (10")', price: 150, calories: 600, scale: 0.85, toppingPriceMultiplier: 0.8 },
+  { id: 'm', name: 'Medium (12")', price: 220, calories: 900, scale: 1, toppingPriceMultiplier: 1 },
+  { id: 'l', name: 'Large (14")', price: 290, calories: 1200, scale: 1.15, toppingPriceMultiplier: 1.2 },
+  { id: 'xl', name: 'Extra Large (16")', price: 350, calories: 1500, scale: 1.3, toppingPriceMultiplier: 1.4 },
 ];
 
 export const CRUSTS: Crust[] = [
   { id: 'hand_tossed', name: 'Classic Hand-Tossed', price: 0, calories: 0, description: 'Traditional garlic-buttered crust' },
   { id: 'thin', name: 'Thin Crust', price: 0, calories: -150, description: 'Crispy and light' },
-  { id: 'stuffed', name: 'Cheese-Stuffed Crust', price: 2.5, calories: 350, description: 'Ring of melted mozzarella inside' },
-  { id: 'pan', name: 'Pan-Style Thick', price: 1, calories: 250, description: 'Deep dish, golden and buttery' },
-  { id: 'neapolitan', name: 'Neapolitan Artisan', price: 2, calories: -50, description: 'Thin center, puffy charred rim' },
-  { id: 'ny_foldable', name: 'NY Foldable', price: 0, calories: 50, description: 'Large, wide, and foldable' },
-  { id: 'whole_wheat', name: 'Whole Wheat', price: 1, calories: -20, description: 'Nutty flavor, heartier texture' },
-  { id: 'gluten_free', name: 'Gluten-Free', price: 3, calories: 0, description: 'Rice and potato flour blend' },
+  { id: 'stuffed', name: 'Cheese-Stuffed Crust', price: 99, calories: 350, description: 'Ring of melted mozzarella inside' },
+  { id: 'pan', name: 'Pan-Style Thick', price: 59, calories: 250, description: 'Deep dish, golden and buttery' },
+  { id: 'neapolitan', name: 'Neapolitan Artisan', price: 79, calories: -50, description: 'Thin center, puffy charred rim' },
+  { id: 'ny_foldable', name: 'NY Foldable', price: 49, calories: 50, description: 'Large, wide, and foldable' },
+  { id: 'whole_wheat', name: 'Whole Wheat', price: 49, calories: -20, description: 'Nutty flavor, heartier texture' },
+  { id: 'gluten_free', name: 'Gluten-Free', price: 99, calories: 0, description: 'Rice and potato flour blend' },
 ];
 
 export const CUTS: Cut[] = [
@@ -38,7 +38,7 @@ export const SAUCES: Sauce[] = [
   { 
     id: 'white', 
     name: 'Garlic White', 
-    price: 1.5, 
+    price: 35, 
     calories: 140,
     color: '#FEF3C7', 
     type: 'white',
@@ -47,7 +47,7 @@ export const SAUCES: Sauce[] = [
   {
     id: 'cheese_sauce',
     name: 'Cheddar Sauce',
-    price: 2,
+    price: 40, 
     calories: 180,
     color: '#FDBA74', // Orange-ish cheddar color
     type: 'white',
@@ -56,7 +56,7 @@ export const SAUCES: Sauce[] = [
   { 
     id: 'pesto', 
     name: 'Basil Pesto', 
-    price: 2, 
+    price: 40, 
     calories: 160,
     color: '#65A30D', 
     type: 'pesto',
@@ -65,7 +65,7 @@ export const SAUCES: Sauce[] = [
   { 
     id: 'bbq', 
     name: 'Smoky BBQ', 
-    price: 1, 
+    price: 25, 
     calories: 90,
     color: '#78350F', 
     type: 'bbq',
@@ -77,7 +77,7 @@ export const TOPPINGS: Topping[] = [
   { 
     id: 'cheese_extra', 
     name: 'Mozzarella', 
-    price: 1.5, 
+    price: 45, 
     calories: 180,
     color: '#FFF7ED',
     zIndex: 10,
@@ -87,7 +87,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'parmesan',
     name: 'Parmesan Sprinkle',
-    price: 0.5, 
+    price: 20, 
     calories: 60,
     color: '#FFFFF0',
     zIndex: 50, // On top of everything
@@ -97,7 +97,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'blue_cheese',
     name: 'Blue Cheese',
-    price: 2, 
+    price: 60, 
     calories: 140,
     color: '#E0F2FE',
     zIndex: 11,
@@ -107,7 +107,7 @@ export const TOPPINGS: Topping[] = [
   { 
     id: 'pepperoni', 
     name: 'Pepperoni', 
-    price: 2, 
+    price: 50, 
     calories: 120,
     color: '#B91C1C',
     zIndex: 20,
@@ -117,7 +117,7 @@ export const TOPPINGS: Topping[] = [
   { 
     id: 'mushroom', 
     name: 'Mushrooms', 
-    price: 1.5, 
+    price: 30, 
     calories: 15,
     color: '#A8A29E',
     zIndex: 21,
@@ -127,17 +127,17 @@ export const TOPPINGS: Topping[] = [
   { 
     id: 'onion', 
     name: 'Red Onions', 
-    price: 1, 
+    price: 20, 
     calories: 15,
     color: '#C084FC',
     zIndex: 23,
-    iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z',
+    iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8 8-3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z',
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/16148/16148294.png'
   },
   { 
     id: 'pepper', 
     name: 'Green Peppers', 
-    price: 1.25, 
+    price: 25, 
     calories: 10,
     color: '#16A34A',
     zIndex: 24,
@@ -147,7 +147,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'pepper_red',
     name: 'Red Peppers',
-    price: 1.25, 
+    price: 25, 
     calories: 15,
     color: '#EF4444',
     zIndex: 24,
@@ -157,7 +157,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'spinach',
     name: 'Baby Spinach',
-    price: 1.25, 
+    price: 30, 
     calories: 5,
     color: '#15803D',
     zIndex: 26,
@@ -167,7 +167,7 @@ export const TOPPINGS: Topping[] = [
   { 
     id: 'olive', 
     name: 'Black Olives', 
-    price: 1, 
+    price: 30, 
     calories: 35,
     color: '#171717',
     zIndex: 22,
@@ -177,7 +177,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'pineapple',
     name: 'Pineapple',
-    price: 1.5, 
+    price: 40, 
     calories: 50,
     color: '#FDE047',
     zIndex: 25,
@@ -187,7 +187,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'basil',
     name: 'Fresh Basil',
-    price: 1.25, 
+    price: 20, 
     calories: 2,
     color: '#4ADE80',
     zIndex: 25,
@@ -199,7 +199,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'sisig',
     name: 'Crispy Sisig',
-    price: 2.5,
+    price: 85,
     calories: 150,
     color: '#795548', // Brown
     zIndex: 22,
@@ -209,7 +209,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'salted_egg',
     name: 'Salted Egg',
-    price: 1.5, 
+    price: 50, 
     calories: 80,
     color: '#FBC02D', // Golden Yellow
     zIndex: 24,
@@ -219,7 +219,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'chili',
     name: 'Siling Labuyo',
-    price: 0.5,
+    price: 20, 
     calories: 5,
     color: '#D32F2F', // Bright Red
     zIndex: 51,
@@ -231,7 +231,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'ham',
     name: 'Sweet Ham',
-    price: 1.5,
+    price: 50,
     calories: 90,
     color: '#F48FB1', // Pinkish
     zIndex: 21,
@@ -241,7 +241,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'meat',
     name: 'Ground Pork',
-    price: 2.0,
+    price: 75,
     calories: 200,
     color: '#8D6E63', // Brown
     zIndex: 21,
@@ -251,7 +251,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'shrimp',
     name: 'Shrimp',
-    price: 2.5,
+    price: 99,
     calories: 80,
     color: '#FFAB91', // Coral/Pink
     zIndex: 22,
@@ -261,7 +261,7 @@ export const TOPPINGS: Topping[] = [
   {
     id: 'tinapa',
     name: 'Smoked Tinapa',
-    price: 2.0,
+    price: 60, 
     calories: 120,
     color: '#A1887F', // Grayish Brown
     zIndex: 23,
@@ -388,12 +388,15 @@ export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
   }
 ];
 
-// Pre-calculate balanced positions using concentric rings for even coverage across the dough
-// Adjusted counts to maintain consistent density (circumference ~ linear spacing)
+// Pre-calculate balanced positions using a Golden Spiral (Phyllotaxis)
+// This ensures natural, even distribution without distinct rings and filling empty spaces better.
 export const TOPPING_POSITIONS = (() => {
   const positions = [];
+  const count = 50; // Increased density from ~34 to 50 for fuller look
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5)); // ~2.3999 radians
+  const maxRadius = 88; // Slightly larger spread to cover edge gaps
   
-  // 1. Center Item (1 item)
+  // 1. Center Item (Explicitly add to ensure center coverage)
   positions.push({ 
     x: 0, 
     y: 0, 
@@ -401,54 +404,31 @@ export const TOPPING_POSITIONS = (() => {
     scale: 0.9 + Math.random() * 0.2 
   });
 
-  // 2. Inner Ring: Radius ~26 (6 items)
-  const innerCount = 6;
-  for (let i = 0; i < innerCount; i++) {
-    const angle = (i / innerCount) * Math.PI * 2; 
-    const angleOffset = (Math.random() - 0.5) * 0.5; // Slight jitter
-    const r = 26 + Math.random() * 5; 
-    
-    positions.push({
-        x: Math.cos(angle + angleOffset) * r,
-        y: Math.sin(angle + angleOffset) * r,
-        rotation: Math.random() * 360,
-        scale: 0.85 + Math.random() * 0.3
-    });
-  }
+  // 2. Spiral Generation
+  for (let i = 1; i < count; i++) {
+     // Radius based on index for even area distribution (r proportional to sqrt(i))
+     const t = i / (count - 1);
+     const r = maxRadius * Math.sqrt(t);
+     const theta = i * goldenAngle;
+     
+     // Add organic jitter
+     const rJitter = (Math.random() - 0.5) * 8; 
+     const thetaJitter = (Math.random() - 0.5) * 0.4;
+     
+     const finalR = r + rJitter;
+     const finalTheta = theta + thetaJitter;
 
-  // 3. Middle Ring: Radius ~51 (11 items)
-  const midCount = 11;
-  for (let i = 0; i < midCount; i++) {
-    const angle = (i / midCount) * Math.PI * 2;
-    const angleOffset = (Math.random() - 0.5) * 0.5;
-    const r = 51 + Math.random() * 6;
-
-    positions.push({
-        x: Math.cos(angle + angleOffset) * r,
-        y: Math.sin(angle + angleOffset) * r,
+     positions.push({
+        x: Math.cos(finalTheta) * finalR,
+        y: Math.sin(finalTheta) * finalR,
         rotation: Math.random() * 360,
-        scale: 0.85 + Math.random() * 0.3
-    });
-  }
-  
-  // 4. Outer Ring: Radius ~76 (16 items)
-  const outerCount = 16;
-  for (let i = 0; i < outerCount; i++) {
-    const angle = (i / outerCount) * Math.PI * 2;
-    const angleOffset = (Math.random() - 0.5) * 0.5;
-    const r = 76 + Math.random() * 7;
-
-    positions.push({
-        x: Math.cos(angle + angleOffset) * r,
-        y: Math.sin(angle + angleOffset) * r,
-        rotation: Math.random() * 360,
-        scale: 0.85 + Math.random() * 0.3
-    });
+        scale: 0.8 + Math.random() * 0.3 // Varied sizes
+     });
   }
 
   // Shuffle the positions array using Fisher-Yates
-  // This ensures that when animating (staggered by index), the toppings appear 
-  // to "scatter" randomly across the pizza rather than spiraling out.
+  // This ensures that when iterating through a subset (e.g., for Left/Right half),
+  // we don't just get the center-most items but a random scatter.
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];

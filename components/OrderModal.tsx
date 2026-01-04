@@ -29,12 +29,12 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, state, 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
         onClick={onClose} 
       />
       
       <div className="fixed inset-0 pointer-events-none z-60">
-        <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} colors={['#F97316', '#FDBA74', '#0F172A', '#ffffff']} />
+        <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={300} colors={['#F97316', '#DC2626', '#EAB308', '#ffffff']} />
       </div>
 
       <motion.div 
@@ -49,7 +49,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, state, 
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-                className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm"
+                className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30"
             >
                 <Check size={40} strokeWidth={4} />
             </motion.div>
@@ -58,13 +58,13 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, state, 
         </div>
 
         <div className="p-8">
-            <div className="bg-slate-50 rounded-2xl p-5 mb-6 border border-slate-100">
-                <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
+            <div className="bg-orange-50 rounded-2xl p-5 mb-6 border border-orange-100">
+                <div className="flex justify-between items-center mb-4 pb-4 border-b border-orange-200/50">
                     <div>
                         <span className="block font-bold text-slate-800 text-lg">{state.size.name}</span>
-                        <span className="text-xs text-slate-500">{state.crust.name}</span>
+                        <span className="text-xs text-orange-600">{state.crust.name}</span>
                     </div>
-                    <span className="font-bold text-slate-900 text-xl">${totalPrice.toFixed(2)}</span>
+                    <span className="font-black text-orange-600 text-xl">₱{totalPrice.toFixed(2)}</span>
                 </div>
                 
                 <div className="space-y-2">

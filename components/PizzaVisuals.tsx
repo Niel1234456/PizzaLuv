@@ -898,8 +898,12 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
           {/* Toppings Layer */}
           <AnimatePresence>
             {visuals.map((topping, layerIndex) => {
-               const offsetX = Math.cos(layerIndex * 2.5) * 4;
-               const offsetY = Math.sin(layerIndex * 2.5) * 4;
+               // Apply a dynamic offset based on the golden angle to distribute layers
+               // This ensures different topping types don't stack directly on top of each other
+               const offsetAngle = layerIndex * 2.4; 
+               const offsetDist = 4 + (layerIndex % 4) * 3; // Varying distances: 4, 7, 10, 13
+               const offsetX = Math.cos(offsetAngle) * offsetDist;
+               const offsetY = Math.sin(offsetAngle) * offsetDist;
 
                return (
                 <motion.g 

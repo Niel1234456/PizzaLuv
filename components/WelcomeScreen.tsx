@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, ChevronLeft } from 'lucide-react';
+import { ArrowRight, ChevronLeft } from 'lucide-react';
 import { soundEffects } from '../utils/sound';
 
 interface WelcomeScreenProps {
@@ -53,14 +53,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
               transition={{ delay: 0.2 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 shadow-2xl"
             >
-               <Sparkles size={14} className="text-orange-400" />
-               <span className="text-xs font-bold tracking-widest uppercase text-white/90">The Ultimate Pizza Experience</span>
+               <img src="https://cdn-icons-png.flaticon.com/512/3513/3513759.png" alt="Pizza Luv Icon" className="w-4 h-4 object-contain" />
+               <span className="text-xs font-bold tracking-widest uppercase text-white/90">Made with Luv. Built Like a Lab.</span>
             </motion.div>
 
             {/* Title */}
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.9] drop-shadow-lg">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70">CRAFT YOUR</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">PERFECT SLICE</span>
+            <h1 className="text-6xl md:text-9xl font-pizza-logo mb-6 drop-shadow-lg">
+              <span className="block">PizzaLuv</span>
             </h1>
 
             {/* Subtitle */}

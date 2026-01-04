@@ -90,18 +90,18 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
       initial={{ x: -300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.3, type: "spring", damping: 20 }}
-      className="hidden md:flex flex-col h-[92vh] w-[280px] absolute left-5 top-[4vh] bg-white/70 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] border border-white/40 ring-1 ring-black/5 z-20 overflow-hidden"
+      className="hidden md:flex flex-col h-[92vh] w-[280px] absolute left-5 top-[4vh] bg-white/70 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(251,146,60,0.15)] border border-white/40 ring-1 ring-orange-100 z-20 overflow-hidden"
     >
       {/* Header */}
-      <div className="p-5 bg-white/50 border-b border-white/60 backdrop-blur-md z-10 space-y-4">
+      <div className="p-5 bg-white/50 border-b border-orange-100/60 backdrop-blur-md z-10 space-y-4">
          <div className="flex items-center gap-3">
-             <div className="bg-slate-900 text-white p-2 rounded-lg shadow-lg shadow-slate-900/20">
-                 <ChefHat size={18} />
+             <div className="bg-white p-1.5 rounded-full shadow-md shadow-orange-500/10 border border-orange-50">
+                 <img src="https://cdn-icons-png.flaticon.com/512/3513/3513759.png" alt="Logo" className="w-8 h-8 object-contain" />
              </div>
              <div>
-                <h1 className="text-base font-extrabold tracking-tight text-slate-900 leading-none">PizzaCraft</h1>
+                <h1 className="text-xl font-pizza-logo tracking-wide leading-none">PizzaLuv</h1>
                 <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[9px] font-bold text-orange-500 uppercase tracking-wider bg-orange-50 px-2 py-0.5 rounded-full">Menu</span>
+                    <span className="text-[9px] font-bold text-orange-500 uppercase tracking-wider bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">Menu</span>
                 </div>
              </div>
          </div>
@@ -109,18 +109,18 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
          {/* Search & Sort Controls */}
          <div className="flex gap-2">
             <div className="relative flex-1">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-300" />
                 <input 
                     type="text" 
                     placeholder="Find flavor..." 
                     value={searchQuery}
                     onChange={handleSearch}
-                    className="w-full bg-slate-50 border border-white focus:border-orange-200 focus:ring-2 focus:ring-orange-100 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-700 placeholder:text-slate-400 outline-none transition-all"
+                    className="w-full bg-slate-50 border border-white focus:border-orange-300 focus:ring-2 focus:ring-orange-100 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-700 placeholder:text-slate-400 outline-none transition-all"
                 />
             </div>
             <button 
                 onClick={toggleSort}
-                className="bg-slate-50 border border-white hover:bg-white p-2 rounded-xl text-slate-500 hover:text-orange-500 transition-colors"
+                className="bg-slate-50 border border-white hover:bg-white p-2 rounded-xl text-slate-400 hover:text-orange-500 transition-colors"
                 title="Sort A-Z"
             >
                 {sortOrder === 'asc' ? <ArrowDownAZ size={16} /> : <ArrowUpAZ size={16} />}
@@ -132,7 +132,7 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
       <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
         <div className="flex items-center justify-between mb-3 px-1">
             <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Chef's Selection</h2>
-            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">{filteredAndSortedPizzas.length}</span>
+            <span className="text-[10px] bg-orange-50 text-orange-500 px-2 py-0.5 rounded-full font-bold">{filteredAndSortedPizzas.length}</span>
         </div>
         
         {filteredAndSortedPizzas.length === 0 ? (
@@ -166,7 +166,7 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
                                 className={`relative transition-all duration-300 overflow-hidden cursor-pointer group border rounded-2xl ${
                                     isSelected 
                                     ? 'bg-white border-orange-200 ring-4 ring-orange-500/10 shadow-xl z-10' 
-                                    : 'bg-white border-transparent hover:border-slate-100 hover:shadow-lg'
+                                    : 'bg-white border-transparent hover:border-orange-50 hover:shadow-lg'
                                 }`}
                             >
                                 <div className="p-3">
@@ -225,7 +225,7 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
 
                                                     <button
                                                         onClick={(e) => handleConfirm(e, pizza)}
-                                                        className="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs shadow-lg shadow-slate-900/20 hover:bg-black transition-all flex items-center justify-center gap-2"
+                                                        className="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 hover:from-red-700 hover:via-orange-600 hover:to-yellow-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
                                                     >
                                                         <span>Select</span>
                                                         <div className="bg-white/20 rounded-full p-0.5">
@@ -247,21 +247,21 @@ export const RecommendedSidebar: React.FC<RecommendedSidebarProps> = ({ onSelect
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
-        <div className="p-3 bg-white/60 border-t border-white/60 backdrop-blur-md flex items-center justify-between">
+        <div className="p-3 bg-white/60 border-t border-orange-100/60 backdrop-blur-md flex items-center justify-between">
             <button 
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600"
+                className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-orange-400"
             >
                 <ChevronLeft size={16} />
             </button>
-            <span className="text-[10px] font-bold text-slate-400">
+            <span className="text-[10px] font-bold text-orange-300">
                 Page {currentPage} of {totalPages}
             </span>
             <button 
                 onClick={nextPage}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600"
+                className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-orange-400"
             >
                 <ChevronRight size={16} />
             </button>
