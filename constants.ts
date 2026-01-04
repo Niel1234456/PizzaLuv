@@ -4,6 +4,7 @@ export const SIZES: Size[] = [
   { id: 's', name: 'Small (10")', price: 10, calories: 600, scale: 0.85, toppingPriceMultiplier: 0.8 },
   { id: 'm', name: 'Medium (12")', price: 14, calories: 900, scale: 1, toppingPriceMultiplier: 1 },
   { id: 'l', name: 'Large (14")', price: 18, calories: 1200, scale: 1.15, toppingPriceMultiplier: 1.2 },
+  { id: 'xl', name: 'Extra Large (16")', price: 22, calories: 1500, scale: 1.3, toppingPriceMultiplier: 1.4 },
 ];
 
 export const CRUSTS: Crust[] = [

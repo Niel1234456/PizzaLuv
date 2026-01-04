@@ -509,39 +509,136 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       
-      {/* Wooden Paddle Background - Hide for thumbnails */}
+      {/* Wooden Table & Paddle - Hide for thumbnails */}
       {!isThumbnail && (
-        <motion.div 
-            className="absolute z-0"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-        >
-            <svg 
-                width="600" 
-                height="600" 
-                viewBox="0 -100 400 600" 
-                className="w-[140vw] h-[140vw] max-w-[900px] max-h-[900px] drop-shadow-2xl opacity-90"
+        <>
+            {/* REALISTIC WOODEN TABLE SURFACE */}
+            <motion.div
+                className="absolute z-0 w-[95vw] h-[80vh] md:w-[90vw] md:h-[80vh] max-w-[1200px] max-h-[800px]"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1 }}
             >
-                <defs>
-                    <linearGradient id={sId("woodGradient")} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style={{ stopColor: '#5D2E14' }} /> {/* Darker wood */}
-                        <stop offset="10%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="20%" style={{ stopColor: '#5D2E14' }} />
-                        <stop offset="30%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="40%" style={{ stopColor: '#5D2E14' }} />
-                        <stop offset="60%" style={{ stopColor: '#8B4513' }} />
-                        <stop offset="80%" style={{ stopColor: '#5D2E14' }} />
-                        <stop offset="100%" style={{ stopColor: '#8B4513' }} />
-                    </linearGradient>
-                </defs>
-                {/* Paddle Handle */}
-                <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill={`url(#${sId("woodGradient")})`} />
-                {/* Paddle Head */}
-                <circle cx="200" cy="200" r="190" fill={`url(#${sId("woodGradient")})`} />
-                <circle cx="200" cy="200" r="180" fill="#A0522D" opacity="0.15" />
-            </svg>
-        </motion.div>
+                <div className="w-full h-full rounded-[2.5rem] bg-[#2D1B15] shadow-2xl relative overflow-hidden border-b-[16px] border-r-[16px] border-[#1a0f0c]">
+                    
+                    {/* 1. Base Wood Gradient (Rich Mahogany/Walnut tone) */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#5D4037] via-[#3E2723] to-[#281815]" />
+
+                    {/* 2. SVG Wood Grain Texture - Enhanced */}
+                    <svg width="100%" height="100%" className="absolute inset-0 opacity-60 mix-blend-overlay">
+                        <filter id={sId("woodGrainRealistic")}>
+                            {/* Large scale grain flow */}
+                            <feTurbulence type="fractalNoise" baseFrequency="0.004 0.08" numOctaves="4" seed="5" result="noise" />
+                            {/* Contrast for the grain */}
+                            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1.2 -0.2" in="noise" result="grain" />
+                            {/* Displacement to warp it slightly */}
+                            <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" seed="2" result="warp" />
+                            <feDisplacementMap in="grain" in2="warp" scale="3" xChannelSelector="R" yChannelSelector="G" />
+                        </filter>
+                        <rect width="100%" height="100%" filter={`url(#${sId("woodGrainRealistic")})`} />
+                    </svg>
+                    
+                    {/* 3. Plank Grooves (Shadow + Highlight) */}
+                    <div 
+                        className="absolute inset-0" 
+                        style={{ 
+                            backgroundImage: `
+                                linear-gradient(90deg, 
+                                    rgba(0,0,0,0.6) 0px, 
+                                    rgba(0,0,0,0.6) 2px, 
+                                    rgba(255,255,255,0.05) 3px, 
+                                    transparent 3px
+                                )
+                            `, 
+                            backgroundSize: '140px 100%' 
+                        }} 
+                    />
+
+                    {/* 4. Wood Knots (CSS Radial Gradients randomly placed) */}
+                    <div className="absolute top-[20%] left-[15%] w-32 h-20 rounded-[50%] bg-[#1a0f0c] opacity-20 blur-sm transform rotate-12 mix-blend-multiply" />
+                    <div className="absolute bottom-[30%] right-[25%] w-24 h-16 rounded-[50%] bg-[#1a0f0c] opacity-20 blur-sm transform -rotate-6 mix-blend-multiply" />
+                    <div className="absolute top-[60%] left-[40%] w-20 h-12 rounded-[50%] bg-[#1a0f0c] opacity-15 blur-sm transform rotate-45 mix-blend-multiply" />
+
+                    {/* 5. Surface Imperfections / Scratches */}
+                     <svg width="100%" height="100%" className="absolute inset-0 opacity-20 mix-blend-color-burn">
+                        <filter id={sId("scratches")}>
+                             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed="10" />
+                             <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.8 0" />
+                        </filter>
+                        <rect width="100%" height="100%" filter={`url(#${sId("scratches")})`} />
+                     </svg>
+
+                    {/* 6. Lighting / Specular Sheen (Simulate lamp/window reflection) */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-10 mix-blend-overlay pointer-events-none" style={{ backgroundSize: '200% 200%' }} />
+                    <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_60%)] pointer-events-none" />
+
+                    {/* 7. Deep Vignette for focus */}
+                    <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.8)] rounded-[2.5rem]" />
+                    
+                    {/* 8. Table Edge Highlight (Top Bevel) */}
+                    <div className="absolute inset-x-0 top-0 h-[2px] bg-white opacity-20" />
+                    <div className="absolute inset-y-0 left-0 w-[2px] bg-white opacity-10" />
+                </div>
+            </motion.div>
+
+            {/* Wooden Paddle Background - Enhanced Drop Shadow */}
+            <motion.div 
+                className="absolute z-1"
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+            >
+                {/* Paddle Shadow on Table */}
+                <svg 
+                    width="600" 
+                    height="600" 
+                    viewBox="0 -100 400 600" 
+                    className="absolute w-[140vw] h-[140vw] max-w-[900px] max-h-[900px] translate-y-4 translate-x-2 blur-md opacity-60 mix-blend-multiply pointer-events-none"
+                    style={{ zIndex: -1 }}
+                >
+                     <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill="#000" />
+                     <circle cx="200" cy="200" r="190" fill="#000" />
+                </svg>
+
+                <svg 
+                    width="600" 
+                    height="600" 
+                    viewBox="0 -100 400 600" 
+                    className="w-[140vw] h-[140vw] max-w-[900px] max-h-[900px] drop-shadow-2xl"
+                >
+                    <defs>
+                        <linearGradient id={sId("woodGradient")} x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style={{ stopColor: '#8D5524' }} />
+                            <stop offset="25%" style={{ stopColor: '#C68642' }} />
+                            <stop offset="50%" style={{ stopColor: '#8D5524' }} />
+                            <stop offset="75%" style={{ stopColor: '#C68642' }} />
+                            <stop offset="100%" style={{ stopColor: '#8D5524' }} />
+                        </linearGradient>
+                        <filter id={sId("paddleGrain")}>
+                            <feTurbulence type="fractalNoise" baseFrequency="0.01 0.2" numOctaves="2" result="noise" />
+                             <feComposite operator="in" in="noise" in2="SourceGraphic" result="composite"/>
+                             <feBlend in="composite" in2="SourceGraphic" mode="multiply" opacity="0.4" />
+                        </filter>
+                    </defs>
+                    
+                    <g filter={`url(#${sId("paddleGrain")})`}>
+                        {/* Paddle Handle */}
+                        <path d="M180 380 L220 380 L220 480 C220 490 210 500 200 500 C190 500 180 490 180 480 Z" fill={`url(#${sId("woodGradient")})`} />
+                        {/* Paddle Head */}
+                        <circle cx="200" cy="200" r="190" fill={`url(#${sId("woodGradient")})`} />
+                    </g>
+                    
+                    {/* Paddle Wear & Tear / Flour Dust */}
+                    <circle cx="200" cy="200" r="160" fill="url(#flourDust)" opacity="0.3" filter="blur(20px)" />
+                     <defs>
+                         <radialGradient id="flourDust">
+                             <stop offset="0%" stopColor="#fff" />
+                             <stop offset="100%" stopColor="transparent" />
+                         </radialGradient>
+                     </defs>
+                </svg>
+            </motion.div>
+        </>
       )}
 
       {/* Container for proper aspect ratio scaling */}

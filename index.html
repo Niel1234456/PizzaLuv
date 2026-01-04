@@ -11,101 +11,9 @@
     <style>
       body {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%); /* Red-100 to Amber-100 Gradient Base */
+        background-color: #f8fafc; /* Slate-50: Clean, empty background */
         margin: 0;
         overflow: hidden; /* Prevent body scroll, handle in app */
-      }
-
-      /* Watercolor Background Container */
-      #watercolor-bg {
-        position: fixed;
-        inset: 0;
-        z-index: -2;
-        background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%);
-        overflow: hidden;
-      }
-
-      /* Animated Blobs creating the wash effect */
-      .wash {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(80px); /* Smooth blur for liquid effect */
-        mix-blend-mode: multiply; /* Blends to create richness */
-        animation: wash-float 20s infinite alternate ease-in-out;
-      }
-
-      /* 1. Top-Left: Dominant Red Wash */
-      .wash-1 {
-        top: -15%; 
-        left: -10%; 
-        width: 90vw; 
-        height: 90vw;
-        background: #fca5a5; /* Red-300 */
-        opacity: 0.7;
-      }
-
-      /* 2. Bottom-Right: Dominant Yellow Wash */
-      .wash-2 {
-        top: auto;
-        bottom: -20%; 
-        right: -20%; 
-        width: 90vw; 
-        height: 90vw;
-        background: #fde047; /* Yellow-300 */
-        opacity: 0.6;
-        animation-delay: -5s;
-      }
-
-      /* 3. Center: Orange Blend */
-      .wash-3 {
-        top: 30%; 
-        left: 20%; 
-        width: 60vw; 
-        height: 60vw;
-        background: #fb923c; /* Orange-400 */
-        opacity: 0.5;
-        animation-delay: -10s;
-      }
-
-      /* 4. Top-Right Accent: Soft Gold/Yellow */
-      .wash-4 {
-        top: -10%; 
-        right: -10%; 
-        width: 50vw; 
-        height: 50vw;
-        background: #fcd34d; /* Amber-300 */
-        opacity: 0.4;
-        animation-delay: -15s;
-      }
-      
-      /* 5. Bottom-Left Accent: Deep Red/Rose */
-      .wash-5 {
-        bottom: -5%;
-        left: -5%;
-        width: 40vw; 
-        height: 40vw;
-        background: #f87171; /* Red-400 */
-        opacity: 0.4;
-        animation-delay: -7s;
-      }
-
-      @keyframes wash-float {
-        0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-        33% { transform: translate(30px, -20px) scale(1.1) rotate(5deg); }
-        66% { transform: translate(-20px, 20px) scale(0.95) rotate(-5deg); }
-        100% { transform: translate(10px, -10px) scale(1) rotate(0deg); }
-      }
-
-      /* Paper Texture Overlay */
-      #paper-texture {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        opacity: 0.6;
-        /* Thicker texture for watercolor paper effect */
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
-        pointer-events: none;
-        mix-blend-mode: overlay;
       }
       
       .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -128,19 +36,6 @@
 </script>
 </head>
   <body class="text-slate-800 antialiased overflow-x-hidden h-screen w-screen selection:bg-orange-500 selection:text-white">
-    
-    <!-- Custom Watercolor Background -->
-    <div id="watercolor-bg">
-        <div class="wash wash-1"></div>
-        <div class="wash wash-2"></div>
-        <div class="wash wash-3"></div>
-        <div class="wash wash-4"></div>
-        <div class="wash wash-5"></div>
-    </div>
-
-    <!-- Texture Overlay -->
-    <div id="paper-texture"></div>
-    
     <!-- The App -->
     <div id="root" class="h-full w-full relative z-10"></div>
   </body>

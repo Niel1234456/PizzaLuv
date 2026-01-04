@@ -153,10 +153,17 @@ export const Controls: React.FC<ControlsProps> = ({
                   >
                     <div className="flex items-center gap-4">
                         {/* Visual Size Indicator */}
-                        <div className={`rounded-full border border-dashed border-slate-300 flex items-center justify-center bg-orange-50 transition-transform group-hover:scale-110 ${
-                            size.id === 's' ? 'w-10 h-10' : size.id === 'm' ? 'w-12 h-12' : 'w-14 h-14'
+                        <div className={`relative flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${
+                             size.id === 's' ? 'w-12 h-12' : 
+                             size.id === 'm' ? 'w-14 h-14' : 
+                             size.id === 'l' ? 'w-16 h-16' : 
+                             'w-20 h-20' // XL size
                         }`}>
-                             <span className="text-sm font-bold text-orange-400">{size.name.charAt(0)}</span>
+                             <img 
+                                src="https://cdn-icons-png.flaticon.com/512/9633/9633377.png"
+                                alt={size.name}
+                                className="w-full h-full object-contain drop-shadow-md"
+                             />
                         </div>
                         <div className="text-left">
                             <div className="font-bold text-slate-800 text-sm">{size.name}</div>
