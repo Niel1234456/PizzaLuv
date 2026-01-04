@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Size, Sauce, SelectedTopping } from '../types';
 import { SIZES, SAUCES, TOPPINGS } from '../constants';
-import { Check, Circle, ArrowRight, ShoppingCart, Flame } from 'lucide-react';
+import { Check, Circle, ArrowRight, ShoppingCart, Flame, Search, ChevronLeft, ChevronRight, ArrowDownAZ, ArrowUpAZ, CircleDollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { soundEffects } from '../utils/sound';
 
@@ -16,6 +16,8 @@ interface ControlsProps {
   onTabChange: (tab: 'size' | 'sauce' | 'toppings') => void;
 }
 
+const TOPPINGS_PER_PAGE = 8;
+
 export const Controls: React.FC<ControlsProps> = ({
   currentSize,
   currentSauce,
@@ -26,10 +28,73 @@ export const Controls: React.FC<ControlsProps> = ({
   onToggleTopping,
   onTabChange
 }) => {
+  // Toppings Tab UI State
+  const [toppingSearch, setToppingSearch] = useState('');
+  const [toppingSort, setToppingSort] = useState<'name' | 'price'>('name');
+  const [toppingSortOrder, setToppingSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [toppingPage, setToppingPage] = useState(1);
 
   const handleTabChange = (tab: 'size' | 'sauce' | 'toppings') => {
       soundEffects.select();
       onTabChange(tab);
+  };
+
+  const handleToppingSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setToppingSearch(e.target.value);
+      setToppingPage(1);
+  };
+
+  const toggleToppingSort = () => {
+      soundEffects.select();
+      if (toppingSort === 'name') {
+          setToppingSort('price');
+          setToppingSortOrder('asc'); // Default price low-high
+      } else {
+          setToppingSort('name');
+          setToppingSortOrder('asc'); // Default name A-Z
+      }
+  };
+
+  const filteredToppings = useMemo(() => {
+    let result = [...TOPPINGS];
+    
+    // Search
+    if (toppingSearch) {
+        const q = toppingSearch.toLowerCase();
+        result = result.filter(t => t.name.toLowerCase().includes(q));
+    }
+
+    // Sort
+    result.sort((a, b) => {
+        if (toppingSort === 'name') {
+            return toppingSortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+        } else {
+            return toppingSortOrder === 'asc' ? a.price - b.price : b.price - a.price;
+        }
+    });
+
+    return result;
+  }, [toppingSearch, toppingSort, toppingSortOrder]);
+
+  const paginatedToppings = useMemo(() => {
+      const start = (toppingPage - 1) * TOPPINGS_PER_PAGE;
+      return filteredToppings.slice(start, start + TOPPINGS_PER_PAGE);
+  }, [filteredToppings, toppingPage]);
+
+  const totalPages = Math.ceil(filteredToppings.length / TOPPINGS_PER_PAGE);
+
+  const nextPage = () => {
+    if (toppingPage < totalPages) {
+        soundEffects.select();
+        setToppingPage(p => p + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (toppingPage > 1) {
+        soundEffects.select();
+        setToppingPage(p => p - 1);
+    }
   };
 
   return (
@@ -177,78 +242,128 @@ export const Controls: React.FC<ControlsProps> = ({
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
+                className="flex flex-col h-full"
             >
-              <div className="text-center mb-6">
-                <h3 className="text-lg font-bold text-slate-800">Toppings</h3>
-                <div className="flex items-center justify-center gap-2 mt-1">
-                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Tap to cycle</span>
-                    <span className="text-xs text-slate-400">Whole → Left → Right</span>
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="relative flex-1">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input 
+                            type="text" 
+                            placeholder="Search ingredients..." 
+                            value={toppingSearch}
+                            onChange={handleToppingSearch}
+                            className="w-full bg-white border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-700 outline-none transition-all shadow-sm"
+                        />
+                    </div>
+                    <button 
+                        onClick={toggleToppingSort}
+                        className="bg-white border border-slate-200 hover:border-orange-300 p-2 rounded-xl text-slate-500 hover:text-orange-500 transition-colors shadow-sm"
+                        title="Sort"
+                    >
+                        {toppingSort === 'name' ? <ArrowDownAZ size={16} /> : <CircleDollarSign size={16} />}
+                    </button>
+                </div>
+                
+                <div className="flex items-center justify-center gap-2">
+                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Tap to cycle</span>
+                    <span className="text-[10px] text-slate-400">Whole → Left → Right</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2.5">
-                {TOPPINGS.map((topping) => {
-                  const selectedTopping = selectedToppings.find(t => t.id === topping.id);
-                  const isSelected = !!selectedTopping;
-                  const coverage = selectedTopping?.coverage;
 
-                  const basePrice = topping.price * currentSize.toppingPriceMultiplier;
-                  const displayPrice = isSelected && coverage !== 'whole' ? basePrice * 0.5 : basePrice;
+              <div className="grid grid-cols-2 gap-2.5 flex-1 min-h-0 overflow-y-auto pb-2 scrollbar-hide">
+                {paginatedToppings.length === 0 ? (
+                    <div className="col-span-2 text-center py-10 text-slate-400 text-xs">
+                        No toppings found
+                    </div>
+                ) : (
+                    paginatedToppings.map((topping) => {
+                    const selectedTopping = selectedToppings.find(t => t.id === topping.id);
+                    const isSelected = !!selectedTopping;
+                    const coverage = selectedTopping?.coverage;
 
-                  // Simple Calorie estimate per topping portion
-                  const baseCal = topping.calories; 
-                  const displayCal = isSelected && coverage !== 'whole' ? Math.round(baseCal * 0.5) : baseCal;
+                    const basePrice = topping.price * currentSize.toppingPriceMultiplier;
+                    const displayPrice = isSelected && coverage !== 'whole' ? basePrice * 0.5 : basePrice;
 
-                  return (
-                    <motion.button
-                      key={topping.id}
-                      onClick={() => onToggleTopping(topping.id)}
-                      whileTap={{ scale: 0.96 }}
-                      className={`
-                        relative flex items-center p-3 rounded-2xl transition-all duration-200 text-left gap-3
-                        ${isSelected
-                          ? 'bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ring-2 ring-emerald-500 z-10' 
-                          : 'bg-white hover:bg-slate-50'}
-                      `}
-                    >
-                      <div className="w-8 h-8 relative flex-shrink-0 flex items-center justify-center">
-                         {topping.iconUrl ? (
-                             <img 
-                                src={topping.iconUrl} 
-                                alt={topping.name} 
-                                className={`w-full h-full object-contain drop-shadow-sm transition-all duration-300 ${isSelected ? 'scale-110' : 'scale-95'}`}
-                             />
-                         ) : (
-                             <div className="w-full h-full rounded-full" style={{ backgroundColor: topping.color }} />
-                         )}
-                         
-                         {/* Mode Indicator Badge */}
-                         {isSelected && (
-                             <motion.div 
-                                key={coverage}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white rounded-full p-0.5 shadow-sm border border-white"
-                             >
-                                {coverage === 'whole' && <Circle size={10} fill="currentColor" />}
-                                {coverage === 'left' && <div className="w-2.5 h-2.5 rounded-full bg-white relative overflow-hidden"><div className="absolute left-0 top-0 w-1.5 h-3 bg-emerald-600"></div></div>}
-                                {coverage === 'right' && <div className="w-2.5 h-2.5 rounded-full bg-white relative overflow-hidden"><div className="absolute right-0 top-0 w-1.5 h-3 bg-emerald-600"></div></div>}
-                             </motion.div>
-                         )}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                          <div className={`font-bold text-xs leading-tight truncate ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{topping.name}</div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className={`text-[10px] font-medium ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`}>
-                                {isSelected && coverage !== 'whole' ? 'Half ' : ''}+${displayPrice.toFixed(2)}
-                              </span>
-                              <span className="text-[10px] text-slate-300 font-medium">{displayCal} cal</span>
-                          </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
+                    // Simple Calorie estimate per topping portion
+                    const baseCal = topping.calories; 
+                    const displayCal = isSelected && coverage !== 'whole' ? Math.round(baseCal * 0.5) : baseCal;
+
+                    return (
+                        <motion.button
+                        key={topping.id}
+                        onClick={() => onToggleTopping(topping.id)}
+                        whileTap={{ scale: 0.96 }}
+                        className={`
+                            relative flex items-center p-3 rounded-2xl transition-all duration-200 text-left gap-3
+                            ${isSelected
+                            ? 'bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] ring-2 ring-emerald-500 z-10' 
+                            : 'bg-white hover:bg-slate-50 border border-transparent hover:border-slate-100'}
+                        `}
+                        >
+                        <div className="w-8 h-8 relative flex-shrink-0 flex items-center justify-center">
+                            {topping.iconUrl ? (
+                                <img 
+                                    src={topping.iconUrl} 
+                                    alt={topping.name} 
+                                    className={`w-full h-full object-contain drop-shadow-sm transition-all duration-300 ${isSelected ? 'scale-110' : 'scale-95'}`}
+                                />
+                            ) : (
+                                <div className="w-full h-full rounded-full" style={{ backgroundColor: topping.color }} />
+                            )}
+                            
+                            {/* Mode Indicator Badge */}
+                            {isSelected && (
+                                <motion.div 
+                                    key={coverage}
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white rounded-full p-0.5 shadow-sm border border-white"
+                                >
+                                    {coverage === 'whole' && <Circle size={10} fill="currentColor" />}
+                                    {coverage === 'left' && <div className="w-2.5 h-2.5 rounded-full bg-white relative overflow-hidden"><div className="absolute left-0 top-0 w-1.5 h-3 bg-emerald-600"></div></div>}
+                                    {coverage === 'right' && <div className="w-2.5 h-2.5 rounded-full bg-white relative overflow-hidden"><div className="absolute right-0 top-0 w-1.5 h-3 bg-emerald-600"></div></div>}
+                                </motion.div>
+                            )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                            <div className={`font-bold text-xs leading-tight truncate ${isSelected ? 'text-slate-800' : 'text-slate-500'}`}>{topping.name}</div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className={`text-[10px] font-medium ${isSelected ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                    {isSelected && coverage !== 'whole' ? 'Half ' : ''}+${displayPrice.toFixed(2)}
+                                </span>
+                                <span className="text-[10px] text-slate-300 font-medium">{displayCal} cal</span>
+                            </div>
+                        </div>
+                        </motion.button>
+                    );
+                    })
+                )}
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                  <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <button 
+                          onClick={prevPage}
+                          disabled={toppingPage === 1}
+                          className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600"
+                      >
+                          <ChevronLeft size={16} />
+                      </button>
+                      <span className="text-[10px] font-bold text-slate-400">
+                          {toppingPage} / {totalPages}
+                      </span>
+                      <button 
+                          onClick={nextPage}
+                          disabled={toppingPage === totalPages}
+                          className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600"
+                      >
+                          <ChevronRight size={16} />
+                      </button>
+                  </div>
+              )}
             </motion.div>
           )}
 

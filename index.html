@@ -11,48 +11,100 @@
     <style>
       body {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #F8FAFC; /* Slate 50 fallback */
+        background-color: #fffbf7; /* Slightly warmer white base */
         margin: 0;
         overflow: hidden; /* Prevent body scroll, handle in app */
       }
 
-      /* 1. Fallback Pattern (Subtle Doodles) - Shows if image fails or loads slowly */
-      #bg-fallback {
+      /* Watercolor Background Container */
+      #watercolor-bg {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -3;
-        background-color: #F8FAFC; 
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CBD5E1' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      }
-
-      /* 2. Primary Background Image */
-      #bg-image {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        inset: 0;
         z-index: -2;
-        opacity: 0; /* Starts hidden, fades in on load */
-        transition: opacity 0.8s ease-in;
+        background: #fffbf7;
+        overflow: hidden;
       }
 
-      /* 3. Frosting Overlay - Essential for text readability on busy backgrounds */
-      #app-overlay {
+      /* Animated Blobs creating the wash effect */
+      .wash {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px); /* Slightly less blur to define shapes better */
+        mix-blend-mode: multiply; /* Blends nicely with white */
+        animation: wash-float 20s infinite alternate ease-in-out;
+      }
+
+      /* 1. Large Warm Base (Peach/Orange) */
+      .wash-1 {
+        top: -10%; 
+        left: -10%; 
+        width: 80vw; 
+        height: 80vw;
+        background: #fed7aa; /* Orange-200 - Visible peach */
+        opacity: 0.6;
+      }
+
+      /* 2. Vibrant Orange Accent */
+      .wash-2 {
+        top: 20%; 
+        right: -10%; 
+        width: 50vw; 
+        height: 50vw;
+        background: #fb923c; /* Orange-400 - Stronger orange */
+        opacity: 0.4;
+        animation-delay: -5s;
+      }
+
+      /* 3. Red/Rose Splash */
+      .wash-3 {
+        bottom: -10%; 
+        left: 0%; 
+        width: 60vw; 
+        height: 60vw;
+        background: #fda4af; /* Rose-300 - Visible pink/red */
+        opacity: 0.5;
+        animation-delay: -10s;
+      }
+
+      /* 4. Bright Yellow/Sunshine */
+      .wash-4 {
+        top: 5%; 
+        left: 30%; 
+        width: 40vw; 
+        height: 40vw;
+        background: #fde047; /* Yellow-300 - Bright yellow */
+        opacity: 0.5;
+        animation-delay: -15s;
+      }
+      
+      /* 5. Deep Red/Orange Depth */
+      .wash-5 {
+        bottom: 10%;
+        right: 20%;
+        width: 30vw; 
+        height: 30vw;
+        background: #f87171; /* Red-400 */
+        opacity: 0.3;
+        animation-delay: -7s;
+      }
+
+      @keyframes wash-float {
+        0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        33% { transform: translate(30px, -20px) scale(1.1) rotate(5deg); }
+        66% { transform: translate(-20px, 20px) scale(0.95) rotate(-5deg); }
+        100% { transform: translate(10px, -10px) scale(1) rotate(0deg); }
+      }
+
+      /* Paper Texture Overlay */
+      #paper-texture {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1; 
+        inset: 0;
+        z-index: -1;
+        opacity: 0.5;
+        /* Thicker texture for watercolor paper effect */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.3'/%3E%3C/svg%3E");
         pointer-events: none;
-        /* White fade + Blur to make the UI pop against the colorful ingredients */
-        background: rgba(255, 255, 255, 0.65);
-        backdrop-filter: blur(3px); 
+        mix-blend-mode: overlay;
       }
       
       .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -76,23 +128,19 @@
 </head>
   <body class="text-slate-800 antialiased overflow-x-hidden h-screen w-screen selection:bg-orange-500 selection:text-white">
     
-    <!-- 1. Fallback Layer -->
-    <div id="bg-fallback"></div>
+    <!-- Custom Watercolor Background -->
+    <div id="watercolor-bg">
+        <div class="wash wash-1"></div>
+        <div class="wash wash-2"></div>
+        <div class="wash wash-3"></div>
+        <div class="wash wash-4"></div>
+        <div class="wash wash-5"></div>
+    </div>
 
-    <!-- 2. High-Quality Image (Ingredients on White) -->
-    <!-- Using a high-res Unsplash equivalent of the requested iStock image -->
-    <img 
-      id="bg-image" 
-      src="https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2671&q=80" 
-      alt="Pizza Ingredients Background"
-      onload="this.style.opacity='1'"
-      onerror="this.style.display='none'"
-    />
-
-    <!-- 3. UI Contrast Overlay -->
-    <div id="app-overlay"></div>
+    <!-- Texture Overlay -->
+    <div id="paper-texture"></div>
     
-    <!-- 4. The App -->
+    <!-- The App -->
     <div id="root" class="h-full w-full relative z-10"></div>
   </body>
 </html>

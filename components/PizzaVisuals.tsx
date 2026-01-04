@@ -35,7 +35,7 @@ const SPIRAL_PATH_D = (() => {
     return `M 0 0 L ${points.join(' L ')}`;
 })();
 
-const ToppingShape: React.FC<{ type: string; color: string; position: any; index: number; isThumbnail: boolean; idPrefix: string }> = ({ type, color, position, index, isThumbnail, idPrefix }) => {
+const ToppingShape: React.FC<{ type: string; color: string; iconUrl?: string; position: any; index: number; isThumbnail: boolean; idPrefix: string }> = ({ type, color, iconUrl, position, index, isThumbnail, idPrefix }) => {
   
   // Stable random values for animations to prevent re-render jitter
   const randomSeed = useMemo(() => Math.random(), []);
@@ -310,7 +310,157 @@ const ToppingShape: React.FC<{ type: string; color: string; position: any; index
                 <circle cx="5" cy="-3" r="1.5" fill="#F1F5F9" />
             </g>
         );
+      case 'salted_egg':
+        return (
+            <g transform={`rotate(${randomSeed * 360}) scale(${0.9 + randomSeed * 0.2})`}>
+                {/* Egg White Slice - slightly irregular circle */}
+                <path
+                    d="M-9 0 C-9 -5 -5 -8.5 0 -8.5 C 5 -8.5 9 -5 9 0 C 9 5 5 9 0 9 C -5 9 -9 5 -9 0"
+                    fill="#FEFCF3" 
+                    stroke="#E2E8F0" 
+                    strokeWidth="0.5"
+                />
+                
+                {/* Yolk - Salted eggs have a rich dark yellow/orange yolk */}
+                <circle cx="1" cy="0.5" r="4.5" fill="#FBC02D" /> 
+                
+                {/* Yolk Texture/Highlight */}
+                <ellipse cx="2.5" cy="-1" rx="1.5" ry="1" fill="#FFF176" opacity="0.5" transform="rotate(-45 2.5 -1)" />
+                
+                {/* Grainy texture dots on yolk (salted egg characteristic) */}
+                <circle cx="0" cy="2" r="0.6" fill="#F57F17" opacity="0.3" />
+                <circle cx="-1.5" cy="-0.5" r="0.5" fill="#F57F17" opacity="0.3" />
+                <circle cx="2.5" cy="2.5" r="0.4" fill="#F57F17" opacity="0.3" />
+            </g>
+        );
+      case 'sisig':
+        return (
+            <g transform={`rotate(${randomSeed * 360}) scale(${0.85 + randomSeed * 0.3})`}>
+                {/* Main Chunk - Irregular meaty shape */}
+                <path 
+                    d="M-5 -2 L -3 -5 L 2 -4 L 5 -1 L 3 4 L -2 5 L -6 2 Z" 
+                    fill="#795548" 
+                    stroke="#5D4037" 
+                    strokeWidth="0.5" 
+                    strokeLinejoin="round"
+                />
+                
+                {/* Fatty/Crispy Bits - Lighter and Darker spots */}
+                <path d="M-2 -2 L 0 -3 L 2 -1" stroke="#D7CCC8" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+                <circle cx="2" cy="2" r="1.2" fill="#3E2723" opacity="0.7" /> {/* Char */}
+                
+                {/* Tiny Onion bit (often mixed in) */}
+                <rect x="-3" y="1" width="2" height="2" fill="#F5F5F5" rx="0.5" opacity="0.9" />
+                
+                {/* Greasy sheen */}
+                <path d="M-1 0 Q 1 1 3 -1" stroke="white" strokeWidth="0.8" opacity="0.2" fill="none" />
+            </g>
+        );
+      case 'tinapa':
+         return (
+             <g transform={`rotate(${randomSeed * 360}) scale(${0.9 + randomSeed * 0.3})`}>
+                 {/* Fish Flake Body - Elongated, fibrous look */}
+                 <path 
+                    d="M-6 0 C-6 -4 0 -6 5 -2 C 7 1 4 5 0 4 C -4 3 -6 2 -6 0" 
+                    fill="#A1887F" 
+                    stroke="#8D6E63" 
+                    strokeWidth="0.5"
+                 />
+                 
+                 {/* Smoked Skin Texture (Dark Gold/Brown) */}
+                 <path d="M-5 0 Q -2 -2 2 -1" stroke="#5D4037" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" fill="none" />
+                 
+                 {/* Muscle Fibers/Flake lines */}
+                 <path d="M-2 2 L 1 1 M 0 3 L 3 2" stroke="#D7CCC8" strokeWidth="0.5" opacity="0.5" />
+                 
+                 {/* Golden Smoked Highlight */}
+                 <path d="M-3 -1 Q 0 -3 3 -2" stroke="#FFCC80" strokeWidth="1" opacity="0.4" fill="none" />
+             </g>
+         );
+      case 'ham':
+         return (
+             <g transform={`rotate(${randomSeed * 360}) scale(${0.9 + randomSeed * 0.2})`}>
+                {/* Soft, irregular pink square */}
+                <path 
+                    d="M-7 -6 Q 0 -8 7 -5 Q 8 0 6 6 Q -1 8 -6 5 Q -8 0 -7 -6" 
+                    fill="#F48FB1" 
+                    stroke="#EC407A" 
+                    strokeWidth="0.5" 
+                />
+                
+                {/* Muscle grain/texture (faint white lines) */}
+                <path d="M-5 -4 L 5 -3" stroke="white" opacity="0.4" strokeWidth="0.5" strokeLinecap="round" />
+                <path d="M-4 2 L 4 3" stroke="white" opacity="0.3" strokeWidth="0.5" strokeLinecap="round" />
+                
+                {/* Slightly darker edge to simulate thickness/casing */}
+                <path d="M-7 -6 Q -8 0 -6 5" stroke="#D81B60" strokeWidth="0.5" fill="none" opacity="0.3" />
+             </g>
+         );
+      case 'meat':
+         return (
+             <g transform={`rotate(${randomSeed * 360}) scale(${0.85 + randomSeed * 0.3})`}>
+                 {/* Irregular crumbly shape */}
+                 <path 
+                    d="M-4 -3 L -1 -5 L 4 -2 L 3 3 L -2 4 L -5 1 Z" 
+                    fill="#8D6E63" 
+                    stroke="#5D4037" 
+                    strokeWidth="0.5" 
+                    strokeLinejoin="round"
+                 />
+                 
+                 {/* Highlights for cooked texture */}
+                 <circle cx="-1" cy="-1" r="1.5" fill="#A1887F" opacity="0.5" />
+                 <circle cx="2" cy="2" r="1" fill="#D7CCC8" opacity="0.4" />
+                 
+                 {/* Shadow for depth */}
+                 <path d="M-2 4 L 3 3" stroke="#3E2723" strokeWidth="1" opacity="0.3" />
+             </g>
+         );
+      case 'shrimp':
+         return (
+           <image
+              href="https://cdn-icons-png.flaticon.com/512/1493/1493039.png"
+              x="-12"
+              y="-12"
+              width="24"
+              height="24"
+              opacity="0.95"
+              transform={`rotate(${randomSeed * 360})`}
+           />
+         );
+      case 'chili':
+         return (
+            <g transform={`rotate(${randomSeed * 360}) scale(${0.7 + randomSeed * 0.2})`}>
+                {/* Red Pepper Ring Skin */}
+                <circle cx="0" cy="0" r="5" fill="#D32F2F" stroke="#B71C1C" strokeWidth="0.5" />
+                
+                {/* Pale inner pith/flesh */}
+                <circle cx="0" cy="0" r="3.5" fill="#FFEBEE" />
+                
+                {/* Seeds (Yellow/Orange dots) */}
+                <circle cx="-1.5" cy="-1.5" r="0.8" fill="#F59E0B" />
+                <circle cx="1.5" cy="1.5" r="0.8" fill="#F59E0B" />
+                <circle cx="1.5" cy="-1.5" r="0.7" fill="#F59E0B" />
+                
+                {/* Empty center/hole (darker background color to simulate hole) */}
+                <circle cx="0" cy="0" r="1" fill="#EF9A9A" opacity="0.5" />
+            </g>
+         );
       default:
+        // Generic rendering for image-based toppings 
+        if (iconUrl) {
+           return (
+             <image
+                href={iconUrl}
+                x="-12"
+                y="-12"
+                width="24"
+                height="24"
+                opacity="0.95"
+                transform={`rotate(${randomSeed * 360})`}
+             />
+           );
+        }
         return <circle cx="0" cy="0" r="5" fill={color} />;
     }
   };
@@ -667,6 +817,7 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                         key={`${topping.id}-${index}`}
                         type={topping.id}
                         color={topping.color}
+                        iconUrl={topping.iconUrl}
                         position={pos}
                         index={index}
                         isThumbnail={!!isThumbnail}

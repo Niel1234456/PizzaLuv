@@ -192,10 +192,115 @@ export const TOPPINGS: Topping[] = [
     zIndex: 25,
     iconPath: 'M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9 2.48 0 4.73 1.01 6.36 2.64L12 12V21z',
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/12696/12696389.png'
+  },
+  
+  // --- Filipino Flavor Toppings ---
+  {
+    id: 'sisig',
+    name: 'Crispy Sisig',
+    price: 2.5,
+    calories: 150,
+    color: '#795548', // Brown
+    zIndex: 22,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/9447/9447970.png'
+  },
+  {
+    id: 'salted_egg',
+    name: 'Salted Egg',
+    price: 1.5, 
+    calories: 80,
+    color: '#FBC02D', // Golden Yellow
+    zIndex: 24,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/837/837560.png'
+  },
+  {
+    id: 'chili',
+    name: 'Siling Labuyo',
+    price: 0.5,
+    calories: 5,
+    color: '#D32F2F', // Bright Red
+    zIndex: 51,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/5371/5371600.png'
+  },
+
+  // --- New Toppings ---
+  {
+    id: 'ham',
+    name: 'Sweet Ham',
+    price: 1.5,
+    calories: 90,
+    color: '#F48FB1', // Pinkish
+    zIndex: 21,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/10851/10851763.png'
+  },
+  {
+    id: 'meat',
+    name: 'Ground Pork',
+    price: 2.0,
+    calories: 200,
+    color: '#8D6E63', // Brown
+    zIndex: 21,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/17852/17852080.png'
+  },
+  {
+    id: 'shrimp',
+    name: 'Shrimp',
+    price: 2.5,
+    calories: 80,
+    color: '#FFAB91', // Coral/Pink
+    zIndex: 22,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/1493/1493039.png'
+  },
+  {
+    id: 'tinapa',
+    name: 'Smoked Tinapa',
+    price: 2.0,
+    calories: 120,
+    color: '#A1887F', // Grayish Brown
+    zIndex: 23,
+    iconPath: 'M0 0',
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/3005/3005150.png'
   }
 ];
 
 export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
+  // --- Filipino Flavors ---
+  {
+    id: 'sisig_overload',
+    name: 'Sisig Kapampangan',
+    description: 'Crispy pork sisig, red onions, spicy chilies, and creamy mayo drizzle',
+    sauceId: 'white',
+    toppings: ['cheese_extra', 'sisig', 'onion', 'chili', 'pepper']
+  },
+  {
+    id: 'tinapa_gourmet',
+    name: 'Tinapa & Salted Egg',
+    description: 'Smoked fish flakes paired with golden salted egg and fresh tomato',
+    sauceId: 'tomato',
+    toppings: ['cheese_extra', 'salted_egg', 'tinapa', 'basil'] 
+  },
+  {
+    id: 'bicol_express',
+    name: 'Spicy Bicol Express',
+    description: 'Coconut-style white sauce, fiery chilies, shrimp and pork',
+    sauceId: 'white',
+    toppings: ['cheese_extra', 'chili', 'pepper', 'onion', 'sisig']
+  },
+  {
+    id: 'pinoy_aloha',
+    name: 'Pinoy Aloha',
+    description: 'The classic Filipino favorite: Sweet ham, bacon, and lots of pineapple',
+    sauceId: 'tomato',
+    toppings: ['cheese_extra', 'pineapple', 'ham', 'pepper_red']
+  },
+
+  // --- Classics ---
   {
     id: 'margherita',
     name: 'Margherita',
@@ -213,9 +318,9 @@ export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
   {
     id: 'hawaiian',
     name: 'Tropical Hawaiian',
-    description: 'Ham (using pepperoni visual), Pineapple & Cheese',
+    description: 'Ham, Pineapple & Cheese',
     sauceId: 'tomato',
-    toppings: ['cheese_extra', 'pepperoni', 'pineapple']
+    toppings: ['cheese_extra', 'ham', 'pineapple']
   },
   {
     id: 'veggie',
@@ -243,7 +348,7 @@ export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
     name: 'BBQ Smokehouse',
     description: 'Smoky BBQ sauce, onions, and crisp peppers',
     sauceId: 'bbq',
-    toppings: ['cheese_extra', 'onion', 'pepper']
+    toppings: ['cheese_extra', 'onion', 'pepper', 'meat']
   },
   {
     id: 'pesto_verde',
@@ -272,6 +377,13 @@ export const RECOMMENDED_PIZZAS: RecommendedPizza[] = [
     description: 'Pesto, Spinach, Green Peppers, Basil',
     sauceId: 'pesto',
     toppings: ['spinach', 'pepper', 'basil']
+  },
+  {
+    id: 'seafood_special',
+    name: 'Seafood Special',
+    description: 'Shrimp, Tinapa, and white sauce',
+    sauceId: 'white',
+    toppings: ['shrimp', 'tinapa', 'pepper']
   }
 ];
 
@@ -331,6 +443,14 @@ export const TOPPING_POSITIONS = (() => {
         rotation: Math.random() * 360,
         scale: 0.85 + Math.random() * 0.3
     });
+  }
+
+  // Shuffle the positions array using Fisher-Yates
+  // This ensures that when animating (staggered by index), the toppings appear 
+  // to "scatter" randomly across the pizza rather than spiraling out.
+  for (let i = positions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [positions[i], positions[j]] = [positions[j], positions[i]];
   }
 
   return positions;
