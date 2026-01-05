@@ -638,6 +638,58 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                      </defs>
                 </svg>
             </motion.div>
+
+            {/* NEW: Pizza Cutter */}
+            <motion.div
+                className="absolute z-[5] pointer-events-none hidden md:block"
+                style={{
+                    left: '50%',
+                    top: '50%',
+                    marginLeft: '280px', // Position to the right of the pizza
+                    marginTop: '-50px'
+                }}
+                initial={{ opacity: 0, x: 50, rotate: 45 }}
+                animate={{ opacity: 1, x: 0, rotate: 15 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+            >
+                <svg width="140" height="280" viewBox="0 0 100 200" className="drop-shadow-xl">
+                    <defs>
+                        <linearGradient id={sId("cutterBlade")} x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="#e2e8f0" />
+                            <stop offset="50%" stopColor="#94a3b8" />
+                            <stop offset="100%" stopColor="#64748b" />
+                        </linearGradient>
+                        <linearGradient id={sId("cutterHandle")} x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#451a03" />
+                            <stop offset="50%" stopColor="#78350f" />
+                            <stop offset="100%" stopColor="#451a03" />
+                        </linearGradient>
+                    </defs>
+                    
+                    {/* Shadow underneath */}
+                    <ellipse cx="55" cy="180" rx="30" ry="10" fill="black" opacity="0.3" filter="blur(5px)" transform="rotate(-15 55 180)" />
+
+                    <g transform="rotate(-10 50 100)">
+                        {/* Handle */}
+                        <path d="M45 100 L55 100 L60 180 C60 188 55 195 50 195 C45 195 40 188 40 180 Z" fill={`url(#${sId("cutterHandle")})`} stroke="#290f02" strokeWidth="1" />
+                        
+                        {/* Metal Arm */}
+                        <path d="M48 90 L52 90 L52 110 L48 110 Z" fill="#cbd5e1" />
+                        <path d="M50 50 L50 100" stroke="#cbd5e1" strokeWidth="4" />
+                        <path d="M35 50 L65 50 L50 100" fill="none" stroke="#cbd5e1" strokeWidth="4" strokeLinejoin="round" />
+
+                        {/* Blade */}
+                        <circle cx="50" cy="50" r="35" fill={`url(#${sId("cutterBlade")})`} stroke="#cbd5e1" strokeWidth="1.5" />
+                        
+                        {/* Blade Shine */}
+                        <path d="M35 35 Q 50 20 65 35" stroke="white" strokeWidth="2" opacity="0.5" fill="none" />
+                        
+                        {/* Axle */}
+                        <circle cx="50" cy="50" r="4" fill="#475569" />
+                        <circle cx="50" cy="50" r="2" fill="#e2e8f0" />
+                    </g>
+                </svg>
+            </motion.div>
         </>
       )}
 
@@ -715,6 +767,11 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
                 <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
                 <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
             </filter>
+
+            {/* Clip Path for cuts to stay within pizza bounds */}
+            <clipPath id={sId("cut-clip")}>
+                <circle cx="0" cy="0" r="100" />
+            </clipPath>
           </defs>
 
           {/* Crust Shadow */}
@@ -932,32 +989,48 @@ export const PizzaVisuals: React.FC<PizzaVisualsProps> = ({ state, isThumbnail =
 
           {/* Cut Overlay Layer */}
           {!isThumbnail && (
-             <g stroke="rgba(0,0,0,0.4)" strokeWidth="1" strokeLinecap="round">
+             <g stroke="rgba(0,0,0,0.4)" strokeWidth="1.5" strokeLinecap="butt" clipPath={`url(#${sId("cut-clip")})`}>
                  {cutId === 'classic' && (
                      <>
-                         <line x1="0" y1="-100" x2="0" y2="100" />
-                         <line x1="-100" y1="0" x2="100" y2="0" />
-                         <line x1="-70" y1="-70" x2="70" y2="70" />
-                         <line x1="70" y1="-70" x2="-70" y2="70" />
+                         <line x1="0" y1="-110" x2="0" y2="110" />
+                         <line x1="-110" y1="0" x2="110" y2="0" />
+                         <line x1="-80" y1="-80" x2="80" y2="80" />
+                         <line x1="80" y1="-80" x2="-80" y2="80" />
+                     </>
+                 )}
+                 {cutId === 'six_slice' && (
+                     <>
+                        <line x1="0" y1="-110" x2="0" y2="110" />
+                        <line x1="0" y1="-110" x2="0" y2="110" transform="rotate(60)" />
+                        <line x1="0" y1="-110" x2="0" y2="110" transform="rotate(120)" />
+                     </>
+                 )}
+                 {cutId === 'strips' && (
+                     <>
+                        {/* Vertical Strips */}
+                        <line x1="-60" y1="-110" x2="-60" y2="110" />
+                        <line x1="-20" y1="-110" x2="-20" y2="110" />
+                        <line x1="20" y1="-110" x2="20" y2="110" />
+                        <line x1="60" y1="-110" x2="60" y2="110" />
                      </>
                  )}
                  {cutId === 'square' && (
                      <>
-                        <line x1="-33" y1="-95" x2="-33" y2="95" />
-                        <line x1="33" y1="-95" x2="33" y2="95" />
-                        <line x1="-95" y1="-33" x2="95" y2="-33" />
-                        <line x1="-95" y1="33" x2="95" y2="33" />
+                        <line x1="-33" y1="-110" x2="-33" y2="110" />
+                        <line x1="33" y1="-110" x2="33" y2="110" />
+                        <line x1="-110" y1="-33" x2="110" y2="-33" />
+                        <line x1="-110" y1="33" x2="110" y2="33" />
                      </>
                  )}
                  {cutId === 'party' && (
                      <>
-                        <line x1="-50" y1="-86" x2="-50" y2="86" />
-                        <line x1="0" y1="-100" x2="0" y2="100" />
-                        <line x1="50" y1="-86" x2="50" y2="86" />
+                        <line x1="-50" y1="-110" x2="-50" y2="110" />
+                        <line x1="0" y1="-110" x2="0" y2="110" />
+                        <line x1="50" y1="-110" x2="50" y2="110" />
                         
-                        <line x1="-86" y1="-50" x2="86" y2="-50" />
-                        <line x1="-100" y1="0" x2="100" y2="0" />
-                        <line x1="-86" y1="50" x2="86" y2="50" />
+                        <line x1="-110" y1="-50" x2="110" y2="-50" />
+                        <line x1="-110" y1="0" x2="110" y2="0" />
+                        <line x1="-110" y1="50" x2="110" y2="50" />
                      </>
                  )}
              </g>

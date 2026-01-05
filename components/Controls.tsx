@@ -14,6 +14,7 @@ interface ControlsProps {
   onSetSauce: (sauce: Sauce) => void;
   onToggleTopping: (toppingId: string) => void;
   onTabChange: (tab: 'size' | 'sauce' | 'toppings') => void;
+  hideTabs?: boolean;
 }
 
 const TOPPINGS_PER_PAGE = 8;
@@ -26,7 +27,8 @@ export const Controls: React.FC<ControlsProps> = ({
   onSetSize,
   onSetSauce,
   onToggleTopping,
-  onTabChange
+  onTabChange,
+  hideTabs = false,
 }) => {
   // Toppings Tab UI State
   const [toppingSearch, setToppingSearch] = useState('');
@@ -100,26 +102,28 @@ export const Controls: React.FC<ControlsProps> = ({
   return (
     <div className="w-full flex flex-col h-full">
       {/* Modern Floating Tab Bar - Updated to warm colors */}
-      <div className="px-5 mb-6">
-        <div className="flex p-1.5 bg-orange-50 rounded-2xl relative overflow-hidden border border-orange-100">
-            {(['size', 'sauce', 'toppings'] as const).map((tab) => (
-            <button
-                key={tab}
-                onClick={() => handleTabChange(tab)}
-                className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold transition-all z-10 capitalize ${activeTab === tab ? 'text-orange-900' : 'text-slate-400 hover:text-orange-600'}`}
-            >
-                {activeTab === tab && (
-                <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-white rounded-xl shadow-[0_2px_8px_rgba(249,115,22,0.15)] ring-1 ring-orange-100"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                />
-                )}
-                <span className="relative z-10 tracking-wide">{tab}</span>
-            </button>
-            ))}
+      {!hideTabs && (
+        <div className="px-5 mb-6">
+          <div className="flex p-1.5 bg-orange-50 rounded-2xl relative overflow-hidden border border-orange-100">
+              {(['size', 'sauce', 'toppings'] as const).map((tab) => (
+              <button
+                  key={tab}
+                  onClick={() => handleTabChange(tab)}
+                  className={`flex-1 relative py-2.5 rounded-xl text-xs font-bold transition-all z-10 capitalize ${activeTab === tab ? 'text-orange-900' : 'text-slate-400 hover:text-orange-600'}`}
+              >
+                  {activeTab === tab && (
+                  <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-white rounded-xl shadow-[0_2px_8px_rgba(249,115,22,0.15)] ring-1 ring-orange-100"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                  />
+                  )}
+                  <span className="relative z-10 tracking-wide">{tab}</span>
+              </button>
+              ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex-1 overflow-y-auto px-5 pb-4 scrollbar-hide">
         <AnimatePresence mode="wait">

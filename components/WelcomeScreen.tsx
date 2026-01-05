@@ -5,10 +5,11 @@ import { soundEffects } from '../utils/sound';
 
 interface WelcomeScreenProps {
   onStart: (option: 'dine-in' | 'takeout') => void;
+  initialStep?: 'intro' | 'choice';
 }
 
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
-  const [step, setStep] = useState<'intro' | 'choice'>('intro');
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart, initialStep = 'intro' }) => {
+  const [step, setStep] = useState<'intro' | 'choice'>(initialStep);
 
   const handleStartClick = () => {
     soundEffects.select();

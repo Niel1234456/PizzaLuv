@@ -1,4 +1,5 @@
 
+
 export interface PriceItem {
   id: string;
   name: string;
@@ -47,6 +48,15 @@ export interface PizzaState {
   cut: Cut;
   sauce: Sauce;
   toppings: SelectedTopping[];
+}
+
+export interface CartItem {
+  id: string;
+  pizzaState: PizzaState;
+  price: number;
+  prepTime: number;
+  name: string;
+  description: string;
 }
 
 export interface OrderSummary {

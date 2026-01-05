@@ -20,6 +20,8 @@ export const CRUSTS: Crust[] = [
 
 export const CUTS: Cut[] = [
   { id: 'classic', name: 'Classic Slice', description: '8 triangular slices' },
+  { id: 'six_slice', name: 'Big 6 Slices', description: '6 large folded slices' },
+  { id: 'strips', name: 'Strips', description: 'Vertical finger slices' },
   { id: 'square', name: 'Square Cut', description: 'Tavern-style grid cut' },
   { id: 'party', name: 'Party Cut', description: 'Smaller bite-sized squares' },
   { id: 'uncut', name: 'Uncut', description: 'Keep it whole' },
