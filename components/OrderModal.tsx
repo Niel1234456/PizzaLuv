@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, ArrowLeft, Clock, Trash2 } from 'lucide-react';
-import Confetti from 'react-confetti';
+import Confetti from 'react-confetti-boom';
 import { CartItem } from '../types';
 import { TOPPINGS } from '../constants';
 import { soundEffects } from '../utils/sound';
@@ -81,7 +81,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onEdit, onComple
       
       {step === 'success' && (
         <div className="fixed inset-0 pointer-events-none z-60">
-            <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={400} colors={['#F97316', '#DC2626', '#EAB308', '#ffffff']} />
+            <Confetti mode="boom" particleCount={400} colors={['#F97316', '#DC2626', '#EAB308', '#ffffff']} />
         </div>
       )}
 

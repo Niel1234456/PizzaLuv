@@ -11,9 +11,9 @@
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "lucide-react": "0.263.1",
-    "framer-motion": "10.12.16",
-    "react-confetti": "6.1.0"
+    "lucide-react": "^0.400.0",
+    "framer-motion": "^11.0.0",
+    "react-confetti-boom": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
